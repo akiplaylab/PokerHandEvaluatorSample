@@ -1,268 +1,67 @@
-// Much of this code is derived from poker.eval (look for it on sourceforge.net).
-// This library is covered by the LGPL Gnu license. See http://www.gnu.org/copyleft/lesser.html 
-// for more information on this license.
-
-// This code is a very fast, native C# Texas Holdem hand evaluator (containing no interop or unsafe code). 
-// This code can enumarate 35 million 5 card hands per second and 29 million 7 card hands per second on my desktop machine.
-// That's not nearly as fast as the heavily macro-ed poker.eval C library. However, this implementation is
-// in roughly the same ballpark for speed and is quite usable in C#.
-
-// The speed ups are mostly table driven. That means that there are several very large tables included in this file. 
-// The code is divided up into several files they are:
-//      HandEvaluator.cs - base hand evaluator
-//      HandIterator.cs - methods that support IEnumerable and methods that validate the hand evaluator
-//      HandAnalysis.cs - methods to aid in analysis of Texas Holdem Hands.
-
-// Written (ported) by Keith Rule - Sept 2005
-
 using System.Diagnostics;
 using System.Text;
 
 namespace HandEvaluator;
 
-/// <example>
-/// <code>
-/// using System;
-/// using System.Collections.Generic;
-/// using System.Text;
-/// using HoldemHand;
-/// 
-/// // Simple example of using the Holdem.Hand class
-/// class Program
-/// {
-///     static void Main(string[] args)
-///     {
-///         // initialize board
-///         string board = "2d kh qh 3h qc";
-///         // Create a hand with AKs plus board
-///         Hand h1 = new Hand("ad kd", board);
-///         // Create a hand with 23 unsuited plus board
-///         Hand h2 = new Hand("2h 3d", board);
-/// 
-///         // Find stronger hand and print results
-///         if (h1 > h2)
-///         {
-///             Console.WriteLine("{0} greater than \n\t{1}", h1.Description, h2.Description);
-///         }
-///         else
-///         {
-///             Console.WriteLine("{0} less than or equal \n\t{1}", h1.Description, h2.Description);
-///         }
-///     }
-/// }
-/// </code>
-/// </example>
-/// 
-/// <summary>
-/// Represents a Texas Holdem Hand
-/// </summary>
 public partial class Hand : IComparable
 {
-    /// <summary>
-    /// Possible types of hands in a texas holdem game.
-    /// </summary>
     public enum HandTypes
     {
-        /// <summary>
-        /// Only a high card
-        /// </summary>
         HighCard = 0,
-        /// <summary>
-        /// One Pair
-        /// </summary>
         Pair = 1,
-        /// <summary>
-        /// Two Pair
-        /// </summary>
         TwoPair = 2,
-        /// <summary>
-        /// Three of a kind (Trips)
-        /// </summary>
         Trips = 3,
-        /// <summary>
-        /// Straight
-        /// </summary>
         Straight = 4,
-        /// <summary>
-        /// Flush
-        /// </summary>
         Flush = 5,
-        /// <summary>
-        /// FullHouse
-        /// </summary>
         FullHouse = 6,
-        /// <summary>
-        /// Four of a kind
-        /// </summary>
         FourOfAKind = 7,
-        /// <summary>
-        /// Straight Flush
-        /// </summary>
         StraightFlush = 8
     }
 
-    /// <summary>
-    /// Represents the suit - Hearts
-    /// </summary>
     public static readonly int Hearts = 2;
-    /// <summary>
-    /// Represents the suit - Diamonds
-    /// </summary>
     public static readonly int Diamonds = 1;
-    /// <summary>
-    /// Represents the suit - Clubs
-    /// </summary>
     public static readonly int Clubs = 0;
-    /// <summary>
-    /// Represents the suit - Spades
-    /// </summary>
     public static readonly int Spades = 3;
-    /// <summary>
-    /// Rank of a card with a value of two.
-    /// </summary>
+
     public static readonly int Rank2 = 0;
-    /// <summary>
-    /// Rank of a card with a value of three.
-    /// </summary>
     public static readonly int Rank3 = 1;
-    /// <summary>
-    /// Rank of a card with a value of four.
-    /// </summary>
     public static readonly int Rank4 = 2;
-    /// <summary>
-    /// Rank of a card with a value of five.
-    /// </summary>
     public static readonly int Rank5 = 3;
-    /// <summary>
-    /// Rank of a card with a value of six.
-    /// </summary>
     public static readonly int Rank6 = 4;
-    /// <summary>
-    /// Rank of a card with a value of seven.
-    /// </summary>
     public static readonly int Rank7 = 5;
-    /// <summary>
-    /// Rank of a card with a value of eight.
-    /// </summary>
     public static readonly int Rank8 = 6;
-    /// <summary>
-    /// Rank of a card with a value of nine.
-    /// </summary>
     public static readonly int Rank9 = 7;
-    /// <summary>
-    /// Rank of a card with a value of ten.
-    /// </summary>
     public static readonly int RankTen = 8;
-    /// <summary>
-    /// Rank of a card showing a Jack.
-    /// </summary>
     public static readonly int RankJack = 9;
-    /// <summary>
-    /// Rank of a card showing a Queen.
-    /// </summary>
     public static readonly int RankQueen = 10;
-    /// <summary>
-    /// Rank of a card showing a King.
-    /// </summary>
     public static readonly int RankKing = 11;
-    /// <summary>
-    /// Rank of a card showing an Ace.
-    /// </summary>
     public static readonly int RankAce = 12;
-    ///<exclude/>
+
     public static readonly int CardJoker = 52;
-    /// <summary>
-    /// The total number of cards in a deck
-    /// </summary>
     public static readonly int NumberOfCards = 52;
-    /// <exclude/>
     public static readonly int NCardsWJoker = 53;
-    /// <exclude/>
     private static readonly int HANDTYPE_SHIFT = 24;
-    /// <exclude/>
     private static readonly int TOP_CARD_SHIFT = 16;
-    /// <exclude/>
     private static readonly uint TOP_CARD_MASK = 0x000F0000;
-    /// <exclude/>
     private static readonly int SECOND_CARD_SHIFT = 12;
-    /// <exclude/>
     private static readonly uint SECOND_CARD_MASK = 0x0000F000;
-    /// <exclude/>
     private static readonly int THIRD_CARD_SHIFT = 8;
-    /// <exclude/>
     private static readonly int FOURTH_CARD_SHIFT = 4;
-    /// <exclude/>
     private static readonly int FIFTH_CARD_SHIFT = 0;
-    /// <exclude/>
     private static readonly uint FIFTH_CARD_MASK = 0x0000000F;
-    /// <exclude/>
     private static readonly int CARD_WIDTH = 4;
-    /// <exclude/>
     private static readonly uint CARD_MASK = 0x0F;
 
-    /// <summary>
-    /// Hand mask for the current card set
-    /// </summary>
     private ulong handmask;
-    /// <summary>
-    /// Contains string representing the pocket cards
-    /// </summary>
     private string pocket;
-    /// <summary>
-    /// Contains a string representing the board (common cards)
-    /// </summary>
     private string board;
-    /// <summary>
-    /// The value of the current had. This value allows hands to be 
-    /// compared using a normal arithmitic compare function.
-    /// </summary>
     private uint handval;
 
-    /// <summary>
-    /// Default constructor
-    /// </summary>
     public Hand()
     {
         pocket = board = "";
     }
 
-    /// <example>
-    /// <code>
-    /// using System;
-    /// using System.Collections.Generic;
-    /// using System.Text;
-    /// using HoldemHand;
-    /// 
-    /// // Simple example of using the Holdem.Hand class
-    /// class Program
-    /// {
-    ///     static void Main(string[] args)
-    ///     {
-    ///         // initialize board
-    ///         string board = "2d kh qh 3h qc";
-    ///         // Create a hand with AKs plus board
-    ///         Hand h1 = new Hand("ad kd", board);
-    ///         // Create a hand with 23 unsuited plus board
-    ///         Hand h2 = new Hand("2h 3d", board);
-    /// 
-    ///         // Find stronger hand and print results
-    ///         if (h1 > h2)
-    ///         {
-    ///             Console.WriteLine("{0} greater than \n\t{1}", h1.Description, h2.Description);
-    ///         }
-    ///         else
-    ///         {
-    ///             Console.WriteLine("{0} less than or equal \n\t{1}", h1.Description, h2.Description);
-    ///         }
-    ///     }
-    /// }
-    /// </code>
-    /// </example>
-    /// <summary>
-    /// Constructor
-    /// </summary>
-    /// <param name="pocket">Pocket Cards</param>
-    /// <param name="board">Board</param>
     public Hand(string pocket, string board)
     {
 #if DEBUG
@@ -273,13 +72,6 @@ public partial class Hand : IComparable
         Board = board;
     }
 
-    /// <summary>
-    /// This function takes a string representing a full or partial holdem hand 
-    /// and validates that the text represents valid cards and that no card is
-    /// duplicated.
-    /// </summary>
-    /// <param name="hand">hand to validate</param>
-    /// <returns>true of a valid hand, false otherwise</returns>
     public static bool ValidateHand(string hand)
     {
 #if DEBUG
@@ -309,13 +101,6 @@ public partial class Hand : IComparable
         }
     }
 
-    /// <summary>
-    /// This function takes a string representing pocket cards and a board and then 
-    /// validates that the text represents a valid hand.
-    /// </summary>
-    /// <param name="pocket">Pocket cards as a string</param>
-    /// <param name="board">Board cards as a string</param>
-    /// <returns></returns>
     public static bool ValidateHand(string pocket, string board)
     {
 #if DEBUG
@@ -325,41 +110,12 @@ public partial class Hand : IComparable
         return ValidateHand(pocket + " " + board);
     }
 
-    /// <example>
-    /// <code>
-    ///  // Takes an ascii seven card hand and prints out a 
-    ///  // value description. For example: "ad kd 2d kh qh 3h qc" would
-    ///  // output "Two pair, King's and Queen's with a Ace for a kicker"
-    ///  static void PrintDescription(string hand)
-    ///  {
-    ///      // Parse hand into a hand mask
-    ///      ulong handmask = Hand.ParseHand(hand);
-    ///  
-    ///      // Convert hand mask into a compariable hand value.
-    ///      uint handval = Hand.Evaluate(handmask, 7);
-    ///  
-    ///      // Print a description of the hand.
-    ///      Console.WriteLine("Hand: {0}", Hand.DescriptionFromHandValue(handval));
-    ///  }
-    /// </code>
-    /// </example>
-    /// <summary>
-    /// Parses an string description of a hand and returns a hand mask.
-    /// </summary>
-    /// <param name="hand">string descripton of a hand</param>
-    /// <returns>a hand mask representing the hand</returns>
     public static ulong ParseHand(string hand)
     {
         int cards = 0;
         return ParseHand(hand, ref cards);
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="hand"></param>
-    /// <param name="cards"></param>
-    /// <returns></returns>
     public static ulong ParseHand(string hand, ref int cards)
     {
         int index = 0;
@@ -369,7 +125,6 @@ public partial class Hand : IComparable
         if (hand == null) throw new ArgumentNullException("hand");
 #endif
 
-        // A null hand is okay
         if (hand.Trim().Length == 0)
         {
             cards = 0;
@@ -377,10 +132,8 @@ public partial class Hand : IComparable
         }
 
 #if DEBUG
-        // Hand contains either invalid strings or duplicate entries
         if (!ValidateHand(hand)) throw new ArgumentException("Bad hand definition");
 #endif
-        // Parse the hand
         cards = 0;
         for (int card = NextCard(hand, ref index); card >= 0; card = NextCard(hand, ref index))
         {
@@ -390,24 +143,11 @@ public partial class Hand : IComparable
         return handmask;
     }
 
-    /// <summary>
-    /// This static method parses the passed pocket cards and board and produces
-    /// a card mask.
-    /// </summary>
-    /// <param name="pocket">ASCII string representing pocket cards</param>
-    /// <param name="board">ASCII string representing board</param>
-    /// <param name="cards">Number of cards represented in mask</param>
-    /// <returns></returns>
     public static ulong ParseHand(string pocket, string board, ref int cards)
     {
         return ParseHand(pocket + " " + board, ref cards);
     }
 
-    /// <summary>
-    /// Reads an string definition of a card and returns the Card value.
-    /// </summary>
-    /// <param name="card">card string</param>
-    /// <returns></returns>
     public static int ParseCard(string card)
     {
 #if DEBUG
@@ -418,12 +158,6 @@ public partial class Hand : IComparable
         return NextCard(card, ref index);
     }
 
-    /// <summary>
-    /// Parses Card strings (internal)
-    /// </summary>
-    /// <param name="cards">string containing hand definition</param>
-    /// <param name="index">iterator into card string</param>
-    /// <returns></returns>
     public static int NextCard(string cards, ref int index)
     {
         int rank = 0, suit = 0;
@@ -546,49 +280,30 @@ public partial class Hand : IComparable
         return rank + suit * 13;
     }
 
-    /// <summary>
-    /// Given a card value, returns it's rank
-    /// </summary>
-    /// <param name="card">card value</param>
-    /// <returns>returns rank</returns>
     public static int CardRank(int card)
     {
 #if DEBUG
-        // Legal values are 0 - 52.
         if (card < 0 || card > 52)
             throw new ArgumentOutOfRangeException("card");
 #endif
         return card % 13;
     }
 
-    /// <summary>
-    /// Given a card value, returns it's suit
-    /// </summary>
-    /// <param name="card">Card value</param>
-    /// <returns>suit</returns>
     public static int CardSuit(int card)
     {
 #if DEBUG
-        // Legal values are 0 - 52.
         if (card < 0 || card > 52)
             throw new ArgumentOutOfRangeException("card");
 #endif
         return card / 13;
     }
 
-    /// <summary>
-    /// Takes a hand value and returns a description string. This function is obsolute. 
-    /// The use of Hand.DescriptionFromMask(ulong mask) is preferred.
-    /// </summary>
-    /// <param name="handValue">A hand value from Evaluate or Evaluate</param>
-    /// <returns>A description string of the value of the hand</returns>
     [Obsolete("Please use Hand.DescriptionFromMask(ulong mask)")]
     public static string DescriptionFromHandValue(uint handValue)
     {
         return DescriptionFromHandValueInternal(handValue);
     }
 
-    /// <exclude/>
     public static string DescriptionFromHandValueInternal(uint handValue)
     {
         StringBuilder b = new StringBuilder();
@@ -641,23 +356,15 @@ public partial class Hand : IComparable
                 b.Append("A straight flush");
                 return b.ToString();
         }
-        Debug.Assert(false); // Should never get here
+        Debug.Assert(false);
         return "";
     }
 
-    /// <summary>
-    /// Take a card mask like the ones that come out or the Hand.Parse 
-    /// functions.
-    /// </summary>
-    /// <param name="mask">hand mask</param>
-    /// <returns>returns a description of the hand value</returns>
-    /// 
     [Obsolete("Please use Hand.DescriptionFromMask(ulong mask)")]
     public static string MaskToDescription(ulong mask)
     {
 #if DEBUG
         int cards = BitCount(mask);
-        // Must have 1 - 7 cards defined.
         if (cards < 1 || cards > 7)
             throw new ArgumentOutOfRangeException("mask");
         return DescriptionFromMask(mask);
@@ -666,21 +373,14 @@ public partial class Hand : IComparable
 #endif
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="cards"></param>
-    /// <returns></returns>
     public static string DescriptionFromMask(ulong cards)
     {
         int numberOfCards = BitCount(cards);
 
 #if DEBUG
-        // This functions supports 1-7 cards
         if (numberOfCards < 1 || numberOfCards > 7)
             throw new ArgumentOutOfRangeException("numberOfCards");
 #endif
-        // Seperate out by suit
         uint sc = (uint)(cards >> CLUB_OFFSET & 0x1fffUL);
         uint sd = (uint)(cards >> DIAMOND_OFFSET & 0x1fffUL);
         uint sh = (uint)(cards >> HEART_OFFSET & 0x1fffUL);
@@ -735,35 +435,20 @@ public partial class Hand : IComparable
                 }
                 break;
         }
-        Debug.Assert(false); // Should never get here
+        Debug.Assert(false);
         return "";
     }
 
-    /// <summary>
-    /// Takes an string describing a hand and returns the description.
-    /// </summary>
-    /// <param name="hand">the string describing the hand</param>
-    /// <returns>Returns a description string</returns>
-    /// <example>
-    /// <code>
-    /// // Print a description of the hand.
-    /// Console.WriteLine("Hand: {0}", Hand.DescriptionFromHand("ad kd 2d kh qh 3h qc"));
-    /// </code>
-    /// </example>
     public static string DescriptionFromHand(string hand)
     {
         int cards = 0;
 #if DEBUG
-        // Must not be null string
         if (hand == null)
             throw new ArgumentNullException("hand");
 #endif
         return DescriptionFromMask(ParseHand(hand, ref cards));
     }
 
-    /// <summary>
-    /// Updates handmask and handval, called when card strings change
-    /// </summary>
     private void UpdateHandMask()
     {
         int cards = 0;
@@ -771,29 +456,16 @@ public partial class Hand : IComparable
         handval = Evaluate(handmask, cards);
     }
 
-
-
-    /// <summary>
-    /// Returns the string representing the hand.
-    /// </summary>
-    /// <returns></returns>
     public override string ToString()
     {
         return PocketCards + " " + Board; ;
     }
 
-    /// <summary>
-    /// Returns hand mask value
-    /// </summary>
     public ulong MaskValue
     {
         get { return handmask; }
     }
 
-    /// <summary>
-    /// Represents the Mask of the Pocket cards for this instance
-    /// of Hand
-    /// </summary>
     public ulong PocketMask
     {
         set
@@ -807,10 +479,6 @@ public partial class Hand : IComparable
         }
     }
 
-    /// <summary>
-    /// Represents the Mask of the Board cards for this instance
-    /// of Hand
-    /// </summary>
     public ulong BoardMask
     {
         set
@@ -824,9 +492,6 @@ public partial class Hand : IComparable
         }
     }
 
-    /// <summary>
-    /// Returns/Sets pocket card string
-    /// </summary>
     public string PocketCards
     {
         get { return pocket; }
@@ -845,9 +510,6 @@ public partial class Hand : IComparable
         }
     }
 
-    /// <summary>
-    /// Returns/Sets board card string
-    /// </summary>
     public string Board
     {
         get { return board; }
@@ -862,19 +524,11 @@ public partial class Hand : IComparable
         }
     }
 
-    /// <summary>
-    /// Returns/Sets the hand value. This value may be used
-    /// to compare one hand to another using standard numeric 
-    /// compares.
-    /// </summary>
     public uint HandValue
     {
         get { return handval; }
     }
 
-    /// <summary>
-    /// Returns a textual description of the current hand
-    /// </summary>
     public string Description
     {
         get
@@ -883,9 +537,6 @@ public partial class Hand : IComparable
         }
     }
 
-    /// <summary>
-    /// Returns the current hand type.
-    /// </summary>
     public HandTypes HandTypeValue
     {
         get
@@ -894,116 +545,66 @@ public partial class Hand : IComparable
         }
     }
 
-
-    /// <summary>
-    /// This is a fast way to look up the index mask. 
-    /// </summary>
-    /// <param name="index">index of mask</param>
-    /// <returns>mask</returns>
     public static ulong Mask(int index)
     {
         return CardMasksTable[index];
     }
 
-    /// <exclude/>
     public static uint HandType(uint handValue)
     {
         return handValue >> HANDTYPE_SHIFT;
     }
 
-    // FXCop complained about this unused private method so I
-    // commented it out for now.
-    ///// <exclude/>
-    //private static uint Cards(System.UInt32 handValue)
-    //{
-    //    return (handValue & CARD_MASK);
-    //}
-
-    /// <exclude/>
     public static uint TopCard(uint hv)
     {
         return hv >> TOP_CARD_SHIFT & CARD_MASK;
     }
 
-    /// <exclude/>
     private static uint SECOND_CARD(uint hv)
     {
         return hv >> SECOND_CARD_SHIFT & CARD_MASK;
     }
 
-    /// <exclude/>
     private static uint THIRD_CARD(uint hv)
     {
         return hv >> THIRD_CARD_SHIFT & CARD_MASK;
     }
 
-    /// <exclude/>
     private static uint FOURTH_CARD(uint hv)
     {
         return hv >> FOURTH_CARD_SHIFT & CARD_MASK;
     }
 
-    /// <exclude/>
     private static uint FIFTH_CARD(uint hv)
     {
         return hv >> FIFTH_CARD_SHIFT & CARD_MASK;
     }
 
-    /// <exclude/>
     private static uint HANDTYPE_VALUE(HandTypes ht)
     {
         return (uint)ht << HANDTYPE_SHIFT;
     }
 
-    ///// <exclude/>
-    //private static uint HANDVALUE2HANDTYPE(ulong hv)
-    //{
-    //    return (((uint)hv) >> HANDTYPE_SHIFT) & 0xf;
-    //}
-
-    /// <exclude/>
     private static uint TOP_CARD_VALUE(uint c)
     {
         return c << TOP_CARD_SHIFT;
     }
 
-    /// <exclude/>
     private static uint SECOND_CARD_VALUE(uint c)
     {
         return c << SECOND_CARD_SHIFT;
     }
 
-    /// <exclude/>
     private static uint THIRD_CARD_VALUE(uint c)
     {
         return c << THIRD_CARD_SHIFT;
     }
 
-    // FXCop complained about these unused private methods so I 
-    // commented them out until I need them.
-    ///// <exclude/>
-    //private static uint FOURTH_CARD_VALUE(System.UInt32 c)
-    //{
-    //    return ((c) << FOURTH_CARD_SHIFT);
-    //}
-
-    ///// <exclude/>
-    //private static uint FIFTH_CARD_VALUE(System.UInt32 c)
-    //{
-    //    return ((c) << FIFTH_CARD_SHIFT);
-    //}
-    /// <exclude/>
     private static uint CardMask(ulong cards, int suit)
     {
         return (uint)(cards >> 13 * suit & 0x1fffUL);
     }
 
-
-    /// <summary>
-    /// Turns a card mask into the equivalent human readable string.
-    /// </summary>
-    /// <param name="mask">mask to convert</param>
-    /// <returns>human readable string that is equivalent to the hand represented by the mask</returns>
     public static string MaskToString(ulong mask)
     {
         StringBuilder builder = new StringBuilder();
@@ -1023,41 +624,6 @@ public partial class Hand : IComparable
         return builder.ToString();
     }
 
-    /// <summary>
-    /// Evaluates the card mask and returns the type of hand it is. This function is
-    /// faster (but provides less information) than Evaluate or Evaluate.
-    /// </summary>
-    /// <param name="mask">card mask</param>
-    /// <returns>A HandTypes value</returns>
-    /// <example>
-    /// <code>
-    /// public static long ValidateEnumerate5()
-    /// {
-    ///     int[] handtypes = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-    ///     int count = 0;
-    /// 
-    ///     // Iterate through all possible 5 card hands
-    ///     foreach (ulong mask in Hands(5))
-    ///     {
-    ///         handtypes[(int)Hand.EvaluateType(mask)]++;
-    ///         count++;
-    ///     }
-    /// 
-    ///     // Validate results.
-    ///     System.Diagnostics.Debug.Assert(handtypes[(int)HandTypes.HighCard] == 1302540);
-    ///     System.Diagnostics.Debug.Assert(handtypes[(int)HandTypes.Pair] == 1098240);
-    ///     System.Diagnostics.Debug.Assert(handtypes[(int)HandTypes.TwoPair] == 123552);
-    ///     System.Diagnostics.Debug.Assert(handtypes[(int)HandTypes.Trips] == 54912);
-    ///     System.Diagnostics.Debug.Assert(handtypes[(int)HandTypes.Straight] == 10200);
-    ///     System.Diagnostics.Debug.Assert(handtypes[(int)HandTypes.Flush] == 5108);
-    ///     System.Diagnostics.Debug.Assert(handtypes[(int)HandTypes.FullHouse] == 3744);
-    ///     System.Diagnostics.Debug.Assert(handtypes[(int)HandTypes.FourOfAKind] == 624);
-    ///     System.Diagnostics.Debug.Assert(handtypes[(int)HandTypes.StraightFlush] == 40);
-    ///     System.Diagnostics.Debug.Assert(count == 2598960);
-    ///     return count;
-    /// }
-    /// </code>
-    /// </example>
     public static HandTypes EvaluateType(ulong mask)
     {
 #if DEBUG
@@ -1069,12 +635,6 @@ public partial class Hand : IComparable
 #endif
     }
 
-    /// <summary>
-    ///  This function is faster (but provides less information) than Evaluate or Evaluate.
-    /// </summary>
-    /// <param name="mask">card mask</param>
-    /// <param name="cards">number of cards in mask</param>
-    /// <returns>HandType enum that describes the rank of the hand</returns>
     public static HandTypes EvaluateType(ulong mask, int cards)
     {
         HandTypes is_st_or_fl = HandTypes.HighCard;
@@ -1123,93 +683,38 @@ public partial class Hand : IComparable
         }
     }
 
-    /// <summary>
-    /// Evaluates a hand (passed as a hand mask) and returns a hand value.
-    /// A hand value can be compared against another hand value to
-    /// determine which has the higher value.
-    /// </summary>
-    /// <param name="cards">hand mask</param>
-    /// <returns>Hand Value bit field</returns>
     public static uint Evaluate(ulong cards)
     {
         return Evaluate(cards, BitCount(cards));
     }
 
-    /// <summary>
-    /// Evaluates a hand (passed as a string) and returns a hand value.
-    /// A hand value can be compared against another hand value to
-    /// determine which has the higher value.
-    /// </summary>
-    /// <param name="hand">hand string</param>
-    /// <returns>Hnad Value bit field</returns>
     public static uint Evaluate(string hand)
     {
         return Evaluate(ParseHand(hand));
     }
 
-    /// <exclude/>
     private static readonly uint HANDTYPE_VALUE_STRAIGHTFLUSH = (uint)HandTypes.StraightFlush << HANDTYPE_SHIFT;
-    /// <exclude/>
     private static readonly uint HANDTYPE_VALUE_STRAIGHT = (uint)HandTypes.Straight << HANDTYPE_SHIFT;
-    /// <exclude/>
     private static readonly uint HANDTYPE_VALUE_FLUSH = (uint)HandTypes.Flush << HANDTYPE_SHIFT;
-    /// <exclude/>
     private static readonly uint HANDTYPE_VALUE_FULLHOUSE = (uint)HandTypes.FullHouse << HANDTYPE_SHIFT;
-    /// <exclude/>
     private static readonly uint HANDTYPE_VALUE_FOUR_OF_A_KIND = (uint)HandTypes.FourOfAKind << HANDTYPE_SHIFT;
-    /// <exclude/>
     private static readonly uint HANDTYPE_VALUE_TRIPS = (uint)HandTypes.Trips << HANDTYPE_SHIFT;
-    /// <exclude/>
     private static readonly uint HANDTYPE_VALUE_TWOPAIR = (uint)HandTypes.TwoPair << HANDTYPE_SHIFT;
-    /// <exclude/>
     private static readonly uint HANDTYPE_VALUE_PAIR = (uint)HandTypes.Pair << HANDTYPE_SHIFT;
-    /// <exclude/>
     private static readonly uint HANDTYPE_VALUE_HIGHCARD = (uint)HandTypes.HighCard << HANDTYPE_SHIFT;
-    /// <exclude/>
     public static readonly int SPADE_OFFSET = 13 * Spades;
-    /// <exclude/>
     public static readonly int CLUB_OFFSET = 13 * Clubs;
-    /// <exclude/>
     public static readonly int DIAMOND_OFFSET = 13 * Diamonds;
-    /// <exclude/>
     public static readonly int HEART_OFFSET = 13 * Hearts;
 
-    /// <summary>
-    /// Evaluates a hand (passed as a hand mask) and returns a hand value.
-    /// A hand value can be compared against another hand value to
-    /// determine which has the higher value.
-    /// </summary>
-    /// <param name="cards">hand mask</param>
-    /// <param name="numberOfCards">number of cards in the hand</param>
-    /// <returns>hand value</returns>
-    /// <example>
-    /// <code>
-    /// // Takes an ascii seven card hand and prints out a 
-    /// // value description. For example: "ad kd 2d kh qh 3h qc" would
-    /// // output "Two pair, King's and Queen's with a Ace for a kicker"
-    /// static void PrintDescription(string hand)
-    /// {
-    ///     // Parse hand into a hand mask
-    ///     ulong handmask = Hand.ParseHand(hand);
-    /// 
-    ///     // Convert hand mask into a compariable hand value.
-    ///     uint handval = Hand.Evaluate(handmask, 7);
-    /// 
-    ///     // Print a description of the hand.
-    ///     Console.WriteLine("Hand: {0}", Hand.DescriptionFromHandValue(handval));
-    /// }
-    /// </code>
-    /// </example>
     public static uint Evaluate(ulong cards, int numberOfCards)
     {
         uint retval = 0, four_mask, three_mask, two_mask;
 
 #if DEBUG
-        // This functions supports 1-7 cards
         if (numberOfCards < 1 || numberOfCards > 7)
             throw new ArgumentOutOfRangeException("numberOfCards");
 #endif
-        // Seperate out by suit
         uint sc = (uint)(cards >> CLUB_OFFSET & 0x1fffUL);
         uint sd = (uint)(cards >> DIAMOND_OFFSET & 0x1fffUL);
         uint sh = (uint)(cards >> HEART_OFFSET & 0x1fffUL);
@@ -1376,13 +881,6 @@ public partial class Hand : IComparable
         }
     }
 
-
-    /// <summary>
-    /// Used to compare one hand to another. This method allows
-    /// normal compare functions to work as expected with a hand.
-    /// </summary>
-    /// <param name="obj">object to compare against</param>
-    /// <returns></returns>
     public int CompareTo(object obj)
     {
         Hand h = obj as Hand;
@@ -1390,44 +888,16 @@ public partial class Hand : IComparable
         return (int)HandValue - (int)h.HandValue;
     }
 
-    /// <summary>
-    /// Test for equality
-    /// </summary>
-    /// <param name="obj"></param>
-    /// <returns>returns true if equal, false otherwise</returns>
     public override bool Equals(object obj)
     {
         return handval == ((Hand)obj).handval;
     }
 
-    /// <summary>
-    /// Returns hash code
-    /// </summary>
-    /// <returns>Hash code</returns>
     public override int GetHashCode()
     {
         return (int)handval;
     }
 
-    /// <summary>
-    /// Test for equality
-    /// </summary>
-    /// <param name="op1">left side object</param>
-    /// <param name="op2">right side object</param>
-    /// <returns>returns true if equal, false otherwise</returns>
-    /// <example>
-    /// <code>
-    /// // These two hands are equal because the five best cards
-    /// // in both hands are the same.
-    /// Hand h1 = new Hand("ac as", "4d 5d 6c 7c 8d");
-    /// Hand h2 = new Hand("td js", "4d 5d 6c 7c 8d");
-    /// 
-    /// if (h1 == h2)
-    /// {
-    ///     Console.WriteLine("Hands are equal");
-    /// }
-    /// </code>
-    /// </example>
     static public bool operator ==(Hand op1, Hand op2)
     {
 #if DEBUG
@@ -1437,23 +907,6 @@ public partial class Hand : IComparable
         return op1.handval == op2.handval;
     }
 
-    /// <summary>
-    /// Test for inequality.
-    /// </summary>
-    /// <param name="op1">left side object</param>
-    /// <param name="op2">right side object</param>
-    /// <returns>returns true if not equal, false otherwise</returns>
-    /// <example>
-    /// <code>
-    /// Hand h1 = new Hand("ac as", "4d 5d 6c 7c 8d");
-    /// Hand h2 = new Hand("td 9s", "4d 5d 6c 7c 8d");
-    /// 
-    /// if (h1 != h2)
-    /// {
-    ///     Console.WriteLine("Hand h2 is a higher straight");
-    /// }
-    /// </code>
-    /// </example>
     static public bool operator !=(Hand op1, Hand op2)
     {
 #if DEBUG
@@ -1463,23 +916,6 @@ public partial class Hand : IComparable
         return op1.handval != op2.handval;
     }
 
-    /// <summary>
-    /// Test that the left side is greater than the right side.
-    /// </summary>
-    /// <param name="op1">left side</param>
-    /// <param name="op2">right side</param>
-    /// <returns>returns true of the left item is greater than the right item</returns>
-    /// <example>
-    /// <code>
-    /// Hand h1 = new Hand("ac as", "4d 5d 6c 7c 8d");
-    /// Hand h2 = new Hand("td 9s", "4d 5d 6c 7c 8d");
-    /// 
-    /// if (h2 > h1)
-    /// {
-    ///     Console.WriteLine("Hand h2 is a higher straight");
-    /// }
-    /// </code>
-    /// </example>
     static public bool operator >(Hand op1, Hand op2)
     {
 #if DEBUG
@@ -1489,23 +925,6 @@ public partial class Hand : IComparable
         return op1.handval > op2.handval;
     }
 
-    /// <summary>
-    /// Test that the left side is greater or equal than the right side.
-    /// </summary>
-    /// <param name="op1">left side</param>
-    /// <param name="op2">right side</param>
-    /// <returns>returns true of the left item is greater or equal than the right item</returns>
-    /// <example>
-    /// <code>
-    /// Hand h1 = new Hand("ac as", "4d 5d 6c 7c 8d");
-    /// Hand h2 = new Hand("td 9s", "4d 5d 6c 7c 8d");
-    /// 
-    /// if (h2 >= h1)
-    /// {
-    ///     Console.WriteLine("Hand h2 is a higher straight");
-    /// }
-    /// </code>
-    /// </example>
     static public bool operator >=(Hand op1, Hand op2)
     {
 #if DEBUG
@@ -1515,12 +934,6 @@ public partial class Hand : IComparable
         return op1.handval >= op2.handval;
     }
 
-    /// <summary>
-    /// Test that the left side is less than the right side.
-    /// </summary>
-    /// <param name="op1">left side</param>
-    /// <param name="op2">right side</param>
-    /// <returns>returns true if the left item is less than the right item.</returns>
     static public bool operator <(Hand op1, Hand op2)
     {
 #if DEBUG
@@ -1530,12 +943,6 @@ public partial class Hand : IComparable
         return op1.handval < op2.handval;
     }
 
-    /// <summary>
-    /// Test that the left side is less than or equal to the right side.
-    /// </summary>
-    /// <param name="op1">left side</param>
-    /// <param name="op2">right side</param>
-    /// <returns>returns true if the left item is less than or equal to the right item.</returns>
     static public bool operator <=(Hand op1, Hand op2)
     {
 #if DEBUG
@@ -1545,11 +952,6 @@ public partial class Hand : IComparable
         return op1.handval <= op2.handval;
     }
 
-
-
-    /// <summary>
-    /// Bit count table from snippets.org
-    /// </summary>
     private static readonly byte[] bits =
     {
         0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4,  /* 0   - 15  */
@@ -1570,12 +972,6 @@ public partial class Hand : IComparable
 			4, 5, 5, 6, 5, 6, 6, 7, 5, 6, 6, 7, 6, 7, 7, 8   /* 240 - 255 */
 		};
 
-
-    /// <summary>
-    /// Fast Bitcounting method (adapted from snippets.org)
-    /// </summary>
-    /// <param name="bitField">ulong to count</param>
-    /// <returns>number of set bits in ulong</returns>
     public static int BitCount(ulong bitField)
     {
         return
@@ -1589,7 +985,6 @@ public partial class Hand : IComparable
             bits[(int)((bitField & 0xFF00000000000000UL) >> 56)];
     }
 
-    /// <exclude/>
     private static readonly ushort[] nBitsAndStrTable =
         {
             0x00 ,
@@ -9786,8 +9181,6 @@ public partial class Hand : IComparable
             0x37
         };
 
-    // A table representing the bit count for a 13 bit integer.
-    /// <exclude/>
     private static readonly ushort[] nBitsTable =
     {
         0x00 ,
@@ -17984,8 +17377,6 @@ public partial class Hand : IComparable
         0x0d
     };
 
-    // This table returns a straights starting card (0 if not a straight)
-    /// <exclude/>
     private static readonly ushort[] straightTable =
     {
         0x00 ,
@@ -26182,7 +25573,6 @@ public partial class Hand : IComparable
         0x0c
     };
 
-    /// <exclude/>
     private static readonly uint[] topFiveCardsTable =
     {
         0x00000000 ,
@@ -34379,7 +33769,6 @@ public partial class Hand : IComparable
             0x000cba98
         };
 
-    /// <exclude/>
     private static readonly ushort[] topCardTable =
     {
         0x00 ,
@@ -42576,10 +41965,6 @@ public partial class Hand : IComparable
         0x0c
     };
 
-    /// <summary>
-    /// This table is equivalent to 1UL left shifted by the index.
-    /// The lookup is faster than the left shift operator.
-    /// </summary>
     public static readonly ulong[] CardMasksTable =
     {
         0x1,
@@ -42636,8 +42021,6 @@ public partial class Hand : IComparable
         0x8000000000000,
     };
 
-    // converts card number into the equivalent text string.
-    /// <exclude/>
     public static readonly string[] CardTable =
     {
         "2c", "3c", "4c", "5c", "6c", "7c", "8c", "9c", "Tc", "Jc", "Qc", "Kc", "Ac",
@@ -42646,8 +42029,6 @@ public partial class Hand : IComparable
         "2s", "3s", "4s", "5s", "6s", "7s", "8s", "9s", "Ts", "Js", "Qs", "Ks", "As",
     };
 
-    // Converts card number into the card rank text string
-    /// <exclude/>
     private static readonly string[] ranktbl =
     {
         "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Jack", "Queen", "King", "Ace",
@@ -42656,8 +42037,6 @@ public partial class Hand : IComparable
         "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Jack", "Queen", "King", "Ace"
     };
 
-    // Converts card number into the card suit text string
-    /// <exclude/>
     private static readonly string[] suittbl =
     {
         "Clubs", "Clubs", "Clubs", "Clubs", "Clubs", "Clubs", "Clubs", "Clubs", "Clubs", "Clubs", "Clubs", "Clubs", "Clubs",
@@ -42666,8 +42045,6 @@ public partial class Hand : IComparable
         "Spades", "Spades", "Spades", "Spades", "Spades", "Spades", "Spades", "Spades", "Spades", "Spades", "Spades", "Spades", "Spades",
     };
 
-    // Converts card number into the card rank char
-    /// <exclude/>
     private static readonly char[] rankchar =
     {
         '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A',
@@ -42676,8 +42053,6 @@ public partial class Hand : IComparable
         '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A',
     };
 
-    // Converts card number into the card suit text string
-    /// <exclude/>
     private static readonly char[] suitchar =
     {
         'c', 'c', 'c', 'c', 'c', 'c', 'c', 'c', 'c', 'c', 'c', 'c', 'c',
@@ -42685,5 +42060,4 @@ public partial class Hand : IComparable
         'h', 'h', 'h', 'h', 'h', 'h', 'h', 'h', 'h', 'h', 'h', 'h', 'h',
         's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's',
     };
-
 }
