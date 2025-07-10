@@ -1,38 +1,9 @@
-// Much of this code is derived from poker.eval (look for it on sourceforge.net).
-// This library is covered by the LGPL Gnu license. See http://www.gnu.org/copyleft/lesser.html 
-// for more information on this license.
-
-// This code is a very fast, native C# Texas Holdem hand evaluator (containing no interop or unsafe code). 
-// This code can enumarate 35 million 5 card hands per second and 29 million 7 card hands per second on my desktop machine.
-// That's not nearly as fast as the heavily macro-ed poker.eval C library. However, this implementation is
-// in roughly the same ballpark for speed and is quite usable in C#.
-
-// The speed ups are mostly table driven. That means that there are several very large tables included in this file. 
-// The code is divided up into several files they are:
-//      HandEvaluator.cs - base hand evaluator
-//      HandIterator.cs - methods that support IEnumerable and methods that validate the hand evaluator
-//      HandAnalysis.cs - methods to aid in analysis of Texas Holdem Hands.
-
-// Written (ported) by Keith Rule - Sept 2005
-
 using System.Diagnostics;
 
 namespace HandEvaluator;
 
 public partial class Hand : IComparable
 {
-    /// <summary>
-    /// Used to calculate the wining information about each players hand. This function enumerates all 
-    /// possible remaining hands and tallies win, tie and losses for each player. This function typically takes
-    /// well less than a second regardless of the number of players.
-    /// </summary>
-    /// <param name="pockets">Array of pocket hand string, one for each player</param>
-    /// <param name="board">the board cards</param>
-    /// <param name="dead">the dead cards</param>
-    /// <param name="wins">An array of win tallies, one for each player</param>
-    /// <param name="ties">An array of tie tallies, one for each player</param>
-    /// <param name="losses">An array of losses tallies, one for each player</param>
-    /// <param name="totalHands">The total number of hands enumarated.</param>
     public static void HandOdds(string[] pockets, string board, string dead, long[] wins, long[] ties, long[] losses, ref long totalHands)
     {
         ulong[] pocketmasks = new ulong[pockets.Length];
@@ -43,7 +14,6 @@ public partial class Hand : IComparable
         totalHands = 0;
         deadcards_mask |= deadcards;
 
-        // Read pocket cards
         for (int i = 0; i < pockets.Length; i++)
         {
             count = 0;
@@ -54,10 +24,8 @@ public partial class Hand : IComparable
             wins[i] = ties[i] = losses[i] = 0;
         }
 
-        // Read board cards
         count = 0;
         boardmask = ParseHand("", board, ref count);
-
 
 #if DEBUG
         Debug.Assert(count >= 0 && count <= 5); // The board must have zero or more cards but no more than a total of 5
@@ -128,15 +96,6 @@ public partial class Hand : IComparable
         }
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="pockets"></param>
-    /// <param name="board"></param>
-    /// <param name="dead"></param>
-    /// <param name="nplayers"></param>
-    /// <param name="trials"></param>
-    /// <param name="winrate"></param>
     public static void MCWinRate(string pockets, string board, string dead, int nplayers, int trials, out double winrate)
     {
         int wins = 0;
@@ -146,13 +105,11 @@ public partial class Hand : IComparable
         int count = 0;
         ulong boardmask = 0UL, deadcards_mask = 0UL, deadcards = ParseHand(dead, ref count);
 
-        // Read pocket cards
         count = 0;
         pocketmasks = ParseHand(pockets, "", ref count);
         if (count != 2)
             throw new ArgumentException(string.Format("There must be two pocket cards. count={0}. hand=\"{1}\"", count, pockets)); // Must have 2 cards in each pocket card set.
 
-        // Read board cards
         count = 0;
         boardmask = ParseHand("", board, ref count);
         Random rand = new Random();
@@ -174,7 +131,7 @@ public partial class Hand : IComparable
                     bestpocket = opponentpocket;
                 }
             }
-            //Console.WriteLine("mypocket:{0},bestpocket:{1}", mypocket, bestpocket);
+
             if (mypocket > bestpocket)
             {
                 wins++;
@@ -188,34 +145,15 @@ public partial class Hand : IComparable
                 losses++;
             }
         }
-        //Console.WriteLine("wins:{0},ties:{1},losses:{2}", wins, ties, losses);
+
         winrate = (wins + ties * 0.5) / trials;
     }
 
-    /// <summary>
-    /// Returns the number of outs possible with the next card.
-    /// </summary>
-    /// <param name="player">Players pocket cards</param>
-    /// <param name="board">THe board (must contain either 3 or 4 cards)</param>
-    /// <param name="opponents">A list of zero or more opponent cards.</param>
-    /// <returns>The count of the number of single cards that improve the current hand.</returns>
     public static int Outs(ulong player, ulong board, params ulong[] opponents)
     {
         return BitCount(OutsMask(player, board, opponents));
     }
 
-    /// <summary>
-    /// Creates a Hand mask with the cards that will improve the specified players hand
-    /// against a list of opponents or if no opponents are list just the cards that improve the 
-    /// players current had.
-    /// 
-    /// Please note that this only looks at single cards that improve the hand and will not specifically
-    /// look at runner-runner possiblities.
-    /// </summary>
-    /// <param name="player">Players pocket cards</param>
-    /// <param name="board">The board (must contain either 3 or 4 cards)</param>
-    /// <param name="opponents">A list of zero or more opponent pocket cards</param>
-    /// <returns>A mask of all of the cards taht improve the hand.</returns>
     public static ulong OutsMask(ulong player, ulong board, params ulong[] opponents)
     {
         ulong retval = 0UL, dead = 0UL;
@@ -278,11 +216,6 @@ public partial class Hand : IComparable
         return retval;
     }
 
-    /// <summary>
-    /// This function returns true if the cards in the hand are all one suit
-    /// </summary>
-    /// <param name="mask">hand to check for "suited-ness"</param>
-    /// <returns>true if all hands are of the same suit, false otherwise.</returns>
     public static bool IsSuited(ulong mask)
     {
         int cards = BitCount(mask);
@@ -296,22 +229,11 @@ public partial class Hand : IComparable
                 BitCount(sh) == cards || BitCount(ss) == cards;
     }
 
-    /// <summary>
-    /// Returns true if the cards in the two card hand are connected.
-    /// </summary>
-    /// <param name="mask">the hand to check</param>
-    /// <returns>true of all of the cards are next to each other.</returns>
     public static bool IsConnected(ulong mask)
     {
         return GapCount(mask) == 0;
     }
 
-    /// <summary>
-    /// Counts the number of empty space between adjacent cards. 0 means connected, 1 means a gap
-    /// of one, 2 means a gap of two and 3 means a gap of three.
-    /// </summary>
-    /// <param name="mask">two card hand mask</param>
-    /// <returns>number of spaces between two cards</returns>
     static public int GapCount(ulong mask)
     {
         int start, end;
@@ -346,11 +268,6 @@ public partial class Hand : IComparable
         return start - end - 1;
     }
 
-    /// <summary>
-    /// This table is used by HandPlayerOpponentOdds and contains the odds of each type of 
-    /// hand occuring against a random player when the board is currently empty. This calculation
-    /// normally takes about 5 minutes, so the values are precalculated to save time.
-    /// </summary>
     private static readonly double[][] PreCalcPlayerOdds = {
          new double[] {0, 0.286740271754148, 0.337632177082422, 0.107630068931113, 0.00871248305898762, 0.0186005527151292, 0.0842236711352609, 0.00840620900618257, 9.16993377677929E-05},
          new double[] {0, 0.27207410337779, 0.324989138873109, 0.10751232138638, 0.00934600684105111, 0.0180595349176028, 0.0835212896584642, 0.0083608155789998, 9.35872344620858E-05},
@@ -522,9 +439,7 @@ public partial class Hand : IComparable
          new double[] {0.00368818854595913, 0.0914915070392803, 0.117212702169422, 0.0277525564790994, 0.0395740061225062, 0.0589569284950546, 0.0191000282040324, 0.00106420379101098, 0.0010041851237173},
          new double[] {0.00404105717638161, 0.0954661989259584, 0.120045861110682, 0.0280655628382601, 0.0424146942436886, 0.0127214064220143, 0.0191011294771041, 0.00106421523280913, 0.000112155842630271},
     };
-    /// This table is used by HandPlayerOpponentOdds and contains the odds of each type of 
-    /// hand occuring for a random player when the board is currently empty. This calculation
-    /// normally takes about 5 minutes, so the values are precalculated to save time.
+
     private static readonly double[][] PreCalcOppOdds = {
          new double[] {0, 0.000176203691467336, 0.0326410244528389, 0.0291796688400362, 0.0451538349760895, 0.021233850140286, 0.0176688366036853, 0.0015772518745956, 0.00033219639999077},
          new double[] {0, 0.0144409365798291, 0.045186784494304, 0.0292916954856958, 0.0450247457489429, 0.0217730639476378, 0.018371218080482, 0.00162264530177838, 0.000332112493471024},
@@ -697,14 +612,6 @@ public partial class Hand : IComparable
          new double[] {0.056705780453633, 0.284876445742707, 0.19390776118145, 0.0405017490695434, 0.0458511753873192, 0.0286710565985708, 0.0245006313012128, 0.00162780817482152, 0.000325310821214085},
     };
 
-
-    /// <summary>
-    /// Given a set of pocket cards and a set of board cards this function returns the odds of winning or tying for a player and a random opponent.
-    /// </summary>
-    /// <param name="ourcards">Pocket mask for the hand.</param>
-    /// <param name="board">Board mask for hand</param>
-    /// <param name="player">Player odds as doubles</param>
-    /// <param name="opponent">Opponent odds as doubles</param>
     public static void HandPlayerOpponentOdds(ulong ourcards, ulong board, ref double[] player, ref double[] opponent)
     {
         uint ourbest, oppbest;
@@ -765,26 +672,11 @@ public partial class Hand : IComparable
         }
     }
 
-    /// <summary>
-    /// Given a set of pocket cards and a set of board cards this function returns the odds of winning or tying for a player and a random opponent.
-    /// </summary>
-    /// <param name="pocketcards">Pocket cards in ASCII</param>
-    /// <param name="boardcards">Board cards in ASCII</param>
-    /// <param name="player">Player odds as doubles</param>
-    /// <param name="opponent">Opponent odds as doubles</param>
     public static void HandPlayerOpponentOdds(string pocketcards, string boardcards, ref double[] player, ref double[] opponent)
     {
         HandPlayerOpponentOdds(ParseHand(pocketcards), ParseHand(boardcards), ref player, ref opponent);
     }
 
-    /// <summary>
-    /// Internal function used by HandPotential.
-    /// </summary>
-    /// <param name="ourcards"></param>
-    /// <param name="board"></param>
-    /// <param name="oppcards"></param>
-    /// <param name="index"></param>
-    /// <param name="HP"></param>
     private static void HandPotentialOpp(ulong ourcards, ulong board, ulong oppcards, int index, ref int[,] HP)
     {
         const int ahead = 2;
@@ -806,14 +698,6 @@ public partial class Hand : IComparable
         }
     }
 
-    /// <summary>
-    /// Returns the positive and negative potential of the current hand. This funciton
-    /// is described in Aaron Davidson's masters thesis (davidson.msc.pdf).
-    /// </summary>
-    /// <param name="pocket">Hold Cards</param>
-    /// <param name="board">Community cards</param>
-    /// <param name="ppot">Positive Potential</param>
-    /// <param name="npot">Negative Potential</param>
     public static void HandPotential(ulong pocket, ulong board, out double ppot, out double npot)
     {
         const int ahead = 2;
@@ -877,14 +761,7 @@ public partial class Hand : IComparable
         else
             npot = 0;
     }
-    /// <summary>
-    /// Returns the positive and negative potential of the current hand. This funciton
-    /// is described in Aaron Davidson's masters thesis (davidson.msc.pdf).
-    /// </summary>
-    /// <param name="pocket">Hold Cards in ascii</param>
-    /// <param name="board">Community cards</param>
-    /// <param name="ppot">Positive Potential</param>
-    /// <param name="npot">Negative Potential</param>
+
     public static void HandPotential(string pocket, string board, out double ppot, out double npot)
     {
         HandPotential(ParseHand(pocket), ParseHand(board), out ppot, out npot);
