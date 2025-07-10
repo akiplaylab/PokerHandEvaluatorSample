@@ -22,7 +22,6 @@ namespace HandEvaluator;
 
 public partial class Hand : IComparable
 {
-    #region Hand Tables
 
     /// <summary>
     /// 1326 ulong cards masks for all hold cards.
@@ -295,11 +294,8 @@ public partial class Hand : IComparable
         0xc, 0xa, 0x9, 0x6, 0x5,
         0x3
     };
-    #endregion
 
-    #region Pocket169
 
-    #region Pocket169 Table
     /// <summary>
     /// The 1326 possible pocket cards ordered by the 169 unique holdem combinations. The
     /// index is equivalent to the number value of Hand.PocketPairType.
@@ -476,9 +472,7 @@ public partial class Hand : IComparable
         new ulong [] {0x10004000000, 0x10000002000, 0x10000000001, 0x8008000000, 0x8000004000, 0x8000000002, 0x8002000, 0x8000001, 0x4004000, 0x4000002, 0x4001, 0x2002}
     };
 
-    #endregion
 
-    #region Pocket169 Enumeration
     /// <summary>
     /// An enumeration value for each of the 169 possible types of pocket cards.
     /// </summary>
@@ -1165,9 +1159,7 @@ public partial class Hand : IComparable
         /// </summary>
         Pocket32o = 168
     };
-    #endregion
 
-    #region Pocket169 Mask/Enum Lookup
 
     /// <exclude/>
     static private Dictionary<ulong, PocketHand169Enum> pocketdict = new Dictionary<ulong, PocketHand169Enum>();
@@ -1203,10 +1195,7 @@ public partial class Hand : IComparable
 
         return PocketHand169Enum.None;
     }
-    #endregion
-    #endregion
 
-    #region Hands Enumerators
 
     /// <summary>
     /// Enables a foreach command to enumerate all possible ncard hands.
@@ -1598,9 +1587,7 @@ public partial class Hand : IComparable
         }
     }
 
-    #endregion
 
-    #region Random Enumerators
 
     /// <summary>
     /// Returns a rand hand with the specified number of cards and constrained
@@ -1737,5 +1724,4 @@ public partial class Hand : IComparable
         return RandomHands(0UL, 0UL, ncards, duration);
     }
 
-    #endregion
 }

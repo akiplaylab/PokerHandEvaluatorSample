@@ -20,7 +20,6 @@ using System.Text;
 
 namespace HandEvaluator;
 
-#region Hand Class
 /// <example>
 /// <code>
 /// using System;
@@ -59,7 +58,6 @@ namespace HandEvaluator;
 /// </summary>
 public partial class Hand : IComparable
 {
-    #region HandTypes Enumeration
     /// <summary>
     /// Possible types of hands in a texas holdem game.
     /// </summary>
@@ -102,9 +100,7 @@ public partial class Hand : IComparable
         /// </summary>
         StraightFlush = 8
     }
-    #endregion
 
-    #region Consts
     /// <summary>
     /// Represents the suit - Hearts
     /// </summary>
@@ -203,9 +199,7 @@ public partial class Hand : IComparable
     private static readonly int CARD_WIDTH = 4;
     /// <exclude/>
     private static readonly uint CARD_MASK = 0x0F;
-    #endregion
 
-    #region Private Fields
     /// <summary>
     /// Hand mask for the current card set
     /// </summary>
@@ -223,9 +217,7 @@ public partial class Hand : IComparable
     /// compared using a normal arithmitic compare function.
     /// </summary>
     private uint handval;
-    #endregion
 
-    #region Constructor
     /// <summary>
     /// Default constructor
     /// </summary>
@@ -280,9 +272,7 @@ public partial class Hand : IComparable
         PocketCards = pocket;
         Board = board;
     }
-    #endregion
 
-    #region Card Parser/Formatter
     /// <summary>
     /// This function takes a string representing a full or partial holdem hand 
     /// and validates that the text represents valid cards and that no card is
@@ -781,9 +771,7 @@ public partial class Hand : IComparable
         handval = Evaluate(handmask, cards);
     }
 
-    #endregion
 
-    #region Properties
 
     /// <summary>
     /// Returns the string representing the hand.
@@ -905,9 +893,7 @@ public partial class Hand : IComparable
             return (HandTypes)HandType(HandValue);
         }
     }
-    #endregion
 
-    #region HandValue Functions
 
     /// <summary>
     /// This is a fast way to look up the index mask. 
@@ -1011,9 +997,7 @@ public partial class Hand : IComparable
     {
         return (uint)(cards >> 13 * suit & 0x1fffUL);
     }
-    #endregion
 
-    #region Evaluate Hand
 
     /// <summary>
     /// Turns a card mask into the equivalent human readable string.
@@ -1391,9 +1375,7 @@ public partial class Hand : IComparable
                 }
         }
     }
-    #endregion
 
-    #region IComparable Members
 
     /// <summary>
     /// Used to compare one hand to another. This method allows
@@ -1563,11 +1545,8 @@ public partial class Hand : IComparable
         return op1.handval <= op2.handval;
     }
 
-    #endregion
 
-    #region Lookup Tables
 
-    #region Fast BitCounter
     /// <summary>
     /// Bit count table from snippets.org
     /// </summary>
@@ -1609,9 +1588,7 @@ public partial class Hand : IComparable
             bits[(int)((bitField & 0x00FF000000000000UL) >> 48)] +
             bits[(int)((bitField & 0xFF00000000000000UL) >> 56)];
     }
-    #endregion
 
-    #region nBitsAndStr Table
     /// <exclude/>
     private static readonly ushort[] nBitsAndStrTable =
         {
@@ -9808,9 +9785,7 @@ public partial class Hand : IComparable
             0x33 ,
             0x37
         };
-    #endregion
 
-    #region nBitsTable
     // A table representing the bit count for a 13 bit integer.
     /// <exclude/>
     private static readonly ushort[] nBitsTable =
@@ -18008,9 +17983,7 @@ public partial class Hand : IComparable
         0x0c ,
         0x0d
     };
-    #endregion
 
-    #region StraightTable
     // This table returns a straights starting card (0 if not a straight)
     /// <exclude/>
     private static readonly ushort[] straightTable =
@@ -26208,9 +26181,7 @@ public partial class Hand : IComparable
         0x0c ,
         0x0c
     };
-    #endregion
 
-    #region Top Five Card Table
     /// <exclude/>
     private static readonly uint[] topFiveCardsTable =
     {
@@ -34407,9 +34378,7 @@ public partial class Hand : IComparable
             0x000cba98 ,
             0x000cba98
         };
-    #endregion
 
-    #region Top Card Table
     /// <exclude/>
     private static readonly ushort[] topCardTable =
     {
@@ -42606,9 +42575,7 @@ public partial class Hand : IComparable
         0x0c ,
         0x0c
     };
-    #endregion
 
-    #region CardMask
     /// <summary>
     /// This table is equivalent to 1UL left shifted by the index.
     /// The lookup is faster than the left shift operator.
@@ -42668,9 +42635,7 @@ public partial class Hand : IComparable
         0x4000000000000,
         0x8000000000000,
     };
-    #endregion
 
-    #region Card Table
     // converts card number into the equivalent text string.
     /// <exclude/>
     public static readonly string[] CardTable =
@@ -42720,8 +42685,5 @@ public partial class Hand : IComparable
         'h', 'h', 'h', 'h', 'h', 'h', 'h', 'h', 'h', 'h', 'h', 'h', 'h',
         's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's',
     };
-    #endregion
 
-    #endregion
 }
-#endregion

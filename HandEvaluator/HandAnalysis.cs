@@ -21,7 +21,6 @@ namespace HandEvaluator;
 
 public partial class Hand : IComparable
 {
-    #region Analysis Functions
     /// <summary>
     /// Used to calculate the wining information about each players hand. This function enumerates all 
     /// possible remaining hands and tallies win, tie and losses for each player. This function typically takes
@@ -347,7 +346,6 @@ public partial class Hand : IComparable
         return start - end - 1;
     }
 
-    #region Precalc Odds Table
     /// <summary>
     /// This table is used by HandPlayerOpponentOdds and contains the odds of each type of 
     /// hand occuring against a random player when the board is currently empty. This calculation
@@ -698,7 +696,6 @@ public partial class Hand : IComparable
          new double[] {0.0520210041379263, 0.267047033513599, 0.183376907991352, 0.0384575881623919, 0.0430645769366531, 0.029733230185523, 0.0244845155285224, 0.00162703585344658, 0.000343801720503187},
          new double[] {0.056705780453633, 0.284876445742707, 0.19390776118145, 0.0405017490695434, 0.0458511753873192, 0.0286710565985708, 0.0245006313012128, 0.00162780817482152, 0.000325310821214085},
     };
-    #endregion
 
 
     /// <summary>
@@ -892,5 +889,4 @@ public partial class Hand : IComparable
     {
         HandPotential(ParseHand(pocket), ParseHand(board), out ppot, out npot);
     }
-    #endregion
 }
