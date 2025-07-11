@@ -1,5 +1,4 @@
 using HandEvaluator.Models;
-using System.Diagnostics;
 using System.Text;
 
 namespace HandEvaluator;
@@ -18,20 +17,12 @@ public partial class Hand : IComparable
 
     public Hand(string pocket, string board)
     {
-#if DEBUG
-        if (pocket == null) throw new ArgumentNullException("pocket");
-        if (board == null) throw new ArgumentNullException("board");
-#endif
         PocketCards = pocket;
         Board = board;
     }
 
     public static bool ValidateHand(string hand)
     {
-#if DEBUG
-        if (hand == null) return false;
-#endif
-
         int index = 0;
         ulong handmask = 0UL;
         int cards = 0;
@@ -57,10 +48,6 @@ public partial class Hand : IComparable
 
     public static bool ValidateHand(string pocket, string board)
     {
-#if DEBUG
-        if (pocket == null || pocket.Trim().Length == 0) throw new ArgumentNullException("pocket");
-        if (board == null || board.Trim().Length == 0) throw new ArgumentNullException("board");
-#endif
         return ValidateHand(pocket + " " + board);
     }
 
@@ -75,19 +62,12 @@ public partial class Hand : IComparable
         int index = 0;
         ulong handmask = 0UL;
 
-#if DEBUG
-        if (hand == null) throw new ArgumentNullException("hand");
-#endif
-
         if (hand.Trim().Length == 0)
         {
             cards = 0;
             return 0UL;
         }
 
-#if DEBUG
-        if (!ValidateHand(hand)) throw new ArgumentException("Bad hand definition");
-#endif
         cards = 0;
         for (int card = NextCard(hand, ref index); card >= 0; card = NextCard(hand, ref index))
         {
@@ -104,10 +84,6 @@ public partial class Hand : IComparable
 
     public static int ParseCard(string card)
     {
-#if DEBUG
-        if (card == null)
-            throw new ArgumentNullException("card");
-#endif
         int index = 0;
         return NextCard(card, ref index);
     }
@@ -115,9 +91,6 @@ public partial class Hand : IComparable
     public static int NextCard(string cards, ref int index)
     {
         int rank = 0, suit = 0;
-#if DEBUG
-        if (cards == null) throw new ArgumentNullException("cards");
-#endif
 
         // Remove whitespace
         while (index < cards.Length && cards[index] == ' ')
@@ -236,19 +209,11 @@ public partial class Hand : IComparable
 
     public static int CardRank(int card)
     {
-#if DEBUG
-        if (card < 0 || card > 52)
-            throw new ArgumentOutOfRangeException("card");
-#endif
         return card % 13;
     }
 
     public static int CardSuit(int card)
     {
-#if DEBUG
-        if (card < 0 || card > 52)
-            throw new ArgumentOutOfRangeException("card");
-#endif
         return card / 13;
     }
 
@@ -304,7 +269,6 @@ public partial class Hand : IComparable
                 b.Append("A straight flush");
                 return b.ToString();
         }
-        Debug.Assert(false);
         return "";
     }
 
@@ -312,10 +276,6 @@ public partial class Hand : IComparable
     {
         int numberOfCards = BitCount(cards);
 
-#if DEBUG
-        if (numberOfCards < 1 || numberOfCards > 7)
-            throw new ArgumentOutOfRangeException("numberOfCards");
-#endif
         uint sc = (uint)(cards >> CLUB_OFFSET & 0x1fffUL);
         uint sd = (uint)(cards >> DIAMOND_OFFSET & 0x1fffUL);
         uint sh = (uint)(cards >> HEART_OFFSET & 0x1fffUL);
@@ -370,17 +330,12 @@ public partial class Hand : IComparable
                 }
                 break;
         }
-        Debug.Assert(false);
         return "";
     }
 
     public static string DescriptionFromHand(string hand)
     {
         int cards = 0;
-#if DEBUG
-        if (hand == null)
-            throw new ArgumentNullException("hand");
-#endif
         return DescriptionFromMask(ParseHand(hand, ref cards));
     }
 
@@ -432,14 +387,6 @@ public partial class Hand : IComparable
         get { return pocket; }
         set
         {
-#if DEBUG
-            if (value == null)
-                throw new ArgumentNullException("value");
-
-            if (value.Trim().Length <= 0 || !ValidateHand(value))
-                throw new ArgumentNullException("value");
-#endif
-
             pocket = value.Trim();
             UpdateHandMask();
         }
@@ -450,10 +397,6 @@ public partial class Hand : IComparable
         get { return board; }
         set
         {
-#if DEBUG
-            if (value == null || value.Trim().Length <= 0 || !ValidateHand(value))
-                throw new ArgumentNullException("value");
-#endif
             board = value;
             UpdateHandMask();
         }
@@ -561,13 +504,7 @@ public partial class Hand : IComparable
 
     public static HandTypes EvaluateType(ulong mask)
     {
-#if DEBUG
-        int cards = BitCount(mask);
-        if (cards <= 0 || cards > 7) throw new ArgumentException("mask");
-        return EvaluateType(mask, cards);
-#else
         return EvaluateType(mask, BitCount(mask));
-#endif
     }
 
     public static HandTypes EvaluateType(ulong mask, int cards)
@@ -646,10 +583,6 @@ public partial class Hand : IComparable
     {
         uint retval = 0, four_mask, three_mask, two_mask;
 
-#if DEBUG
-        if (numberOfCards < 1 || numberOfCards > 7)
-            throw new ArgumentOutOfRangeException("numberOfCards");
-#endif
         uint sc = (uint)(cards >> CLUB_OFFSET & 0x1fffUL);
         uint sd = (uint)(cards >> DIAMOND_OFFSET & 0x1fffUL);
         uint sh = (uint)(cards >> HEART_OFFSET & 0x1fffUL);
@@ -835,55 +768,31 @@ public partial class Hand : IComparable
 
     static public bool operator ==(Hand op1, Hand op2)
     {
-#if DEBUG
-        if (ReferenceEquals(op1, null) || ReferenceEquals(op2, null))
-            throw new ArgumentNullException();
-#endif
         return op1.handval == op2.handval;
     }
 
     static public bool operator !=(Hand op1, Hand op2)
     {
-#if DEBUG
-        if (ReferenceEquals(op1, null) || ReferenceEquals(op2, null))
-            throw new ArgumentNullException();
-#endif
         return op1.handval != op2.handval;
     }
 
     static public bool operator >(Hand op1, Hand op2)
     {
-#if DEBUG
-        if (ReferenceEquals(op1, null) || ReferenceEquals(op2, null))
-            throw new ArgumentNullException();
-#endif
         return op1.handval > op2.handval;
     }
 
     static public bool operator >=(Hand op1, Hand op2)
     {
-#if DEBUG
-        if (ReferenceEquals(op1, null) || ReferenceEquals(op2, null))
-            throw new ArgumentNullException();
-#endif
         return op1.handval >= op2.handval;
     }
 
     static public bool operator <(Hand op1, Hand op2)
     {
-#if DEBUG
-        if (ReferenceEquals(op1, null) || ReferenceEquals(op2, null))
-            throw new ArgumentNullException();
-#endif
         return op1.handval < op2.handval;
     }
 
     static public bool operator <=(Hand op1, Hand op2)
     {
-#if DEBUG
-        if (ReferenceEquals(op1, null) || ReferenceEquals(op2, null))
-            throw new ArgumentNullException();
-#endif
         return op1.handval <= op2.handval;
     }
 

@@ -1,5 +1,4 @@
 using HandEvaluator.Models;
-using System.Diagnostics;
 
 namespace HandEvaluator;
 
@@ -27,30 +26,6 @@ public partial class Hand : IComparable
 
         count = 0;
         boardmask = ParseHand("", board, ref count);
-
-#if DEBUG
-        Debug.Assert(count >= 0 && count <= 5); // The board must have zero or more cards but no more than a total of 5
-
-        // Check pocket cards, board, and dead cards for duplicates
-        if ((boardmask & deadcards) != 0)
-            throw new ArgumentException("Duplicate between cards dead cards and board");
-
-        // Validate the input
-        for (int i = 0; i < pockets.Length; i++)
-        {
-            for (int j = i + 1; j < pockets.Length; j++)
-            {
-                if ((pocketmasks[i] & pocketmasks[j]) != 0)
-                    throw new ArgumentException("Duplicate pocket cards");
-            }
-
-            if ((pocketmasks[i] & boardmask) != 0)
-                throw new ArgumentException("Duplicate between cards pocket and board");
-
-            if ((pocketmasks[i] & deadcards) != 0)
-                throw new ArgumentException("Duplicate between cards pocket and dead cards");
-        }
-#endif
 
         // Iterate through all board possiblities that doesn't include any pocket cards.
         foreach (ulong boardhand in Hands(boardmask, deadcards_mask, 5))
@@ -159,18 +134,12 @@ public partial class Hand : IComparable
     {
         ulong retval = 0UL, dead = 0UL;
         int ncards = BitCount(player | board);
-#if DEBUG
-        Debug.Assert(BitCount(player) == 2); // Must have two cards for a legit set of pocket cards
-        if (ncards != 5 && ncards != 6)
-            throw new ArgumentException("Outs only make sense after the flop and before the river");
-#endif           
 
         if (opponents.Length > 0)
         {
             // Check opportunities to improve against one or more opponents
             foreach (ulong opp in opponents)
             {
-                Debug.Assert(BitCount(opp) == 2); // Must have two cards for a legit set of pocket cards
                 dead |= opp;
             }
 

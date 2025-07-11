@@ -49,29 +49,6 @@ public class HandTests
     }
 
     [TestMethod()]
-    [DataRow("", true)]
-    [DataRow("Ac", false)]
-    [DataRow("7c 6c 5c 4c 3c 2c Ac", false)]
-    [DataRow("8c 7c 6c 5c 4c 3c 2c Ac", true)]
-    [DataRow("Ac Ac", true)]
-    public void EvaluateTypeTest_ArgumentOutOfRange_NumberOfCards(string hand, bool hasArgumentException)
-    {
-        try
-        {
-            var handValue = ParseHand(hand);
-            var actual = EvaluateType(handValue);
-            Assert.IsFalse(hasArgumentException, $"Expected an exception for hand '{hand}', but got {actual}.");
-        }
-        catch (ArgumentException)
-        {
-            if (!hasArgumentException)
-            {
-                Assert.Fail($"Did not expect an exception for hand '{hand}'.");
-            }
-        }
-    }
-
-    [TestMethod()]
     [DataRow(new string[] { "9h 8h 7h 6h 5h", "5h 6h 7h 8h 9h" }, HandTypes.StraightFlush)]
     public void EvaluateTypeTest_SequenceOrOrderDependency(string[] hands, HandTypes expected)
     {

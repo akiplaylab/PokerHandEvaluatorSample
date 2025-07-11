@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Runtime.InteropServices;
 
 namespace HandEvaluator;
@@ -624,12 +623,6 @@ public partial class Hand : IComparable
 
     public static PocketHand169Enum PocketHand169Type(ulong mask)
     {
-#if DEBUG
-        // mask must contain exactly 2 cards
-        if (BitCount(mask) != 2)
-            throw new ArgumentOutOfRangeException("mask");
-#endif
-
         // Fill in dictionary
         if (pocketdict.Count == 0)
         {
@@ -652,11 +645,6 @@ public partial class Hand : IComparable
     {
         int _i1, _i2, _i3, _i4, _i5, _i6, _i7, length;
         ulong _card1, _n2, _n3, _n4, _n5, _n6;
-
-#if DEBUG
-        if (numberOfCards < 0 || numberOfCards > 7)
-            throw new ArgumentOutOfRangeException("numberOfCards");
-#endif
 
         switch (numberOfCards)
         {
@@ -786,7 +774,6 @@ public partial class Hand : IComparable
                 }
                 break;
             default:
-                Debug.Assert(false);
                 yield return 0UL;
                 break;
         }
@@ -1004,11 +991,6 @@ public partial class Hand : IComparable
 
     public static IEnumerable<ulong> RandomHands(ulong shared, ulong dead, int ncards, int trials)
     {
-#if DEBUG
-        if (ncards < 0 || ncards > 7)
-            throw new ArgumentOutOfRangeException("ncards");
-#endif
-
         ulong deadmask = dead | shared;
         int cardcount = ncards - BitCount(shared);
         Random rand = new Random();
@@ -1033,11 +1015,6 @@ public partial class Hand : IComparable
     public static IEnumerable<ulong> RandomHands(ulong shared, ulong dead, int ncards, double duration)
     {
         long start, freq, curtime;
-
-#if DEBUG
-        if (ncards < 0 || ncards > 7) throw new ArgumentOutOfRangeException("ncards");
-        if (duration < 0.0) throw new ArgumentOutOfRangeException("duration");
-#endif
 
         int cardcount = ncards - BitCount(shared);
         ulong deadmask = dead | shared;
