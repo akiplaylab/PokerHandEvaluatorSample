@@ -565,20 +565,6 @@ public partial class Hand : IComparable
         return Evaluate(ParseHand(hand));
     }
 
-    private static readonly uint HANDTYPE_VALUE_STRAIGHTFLUSH = (uint)HandTypes.StraightFlush << HANDTYPE_SHIFT;
-    private static readonly uint HANDTYPE_VALUE_STRAIGHT = (uint)HandTypes.Straight << HANDTYPE_SHIFT;
-    private static readonly uint HANDTYPE_VALUE_FLUSH = (uint)HandTypes.Flush << HANDTYPE_SHIFT;
-    private static readonly uint HANDTYPE_VALUE_FULLHOUSE = (uint)HandTypes.FullHouse << HANDTYPE_SHIFT;
-    private static readonly uint HANDTYPE_VALUE_FOUR_OF_A_KIND = (uint)HandTypes.FourOfAKind << HANDTYPE_SHIFT;
-    private static readonly uint HANDTYPE_VALUE_TRIPS = (uint)HandTypes.Trips << HANDTYPE_SHIFT;
-    private static readonly uint HANDTYPE_VALUE_TWOPAIR = (uint)HandTypes.TwoPair << HANDTYPE_SHIFT;
-    private static readonly uint HANDTYPE_VALUE_PAIR = (uint)HandTypes.Pair << HANDTYPE_SHIFT;
-    private static readonly uint HANDTYPE_VALUE_HIGHCARD = (uint)HandTypes.HighCard << HANDTYPE_SHIFT;
-    public static readonly int SPADE_OFFSET = 13 * Suit.Spades;
-    public static readonly int CLUB_OFFSET = 13 * Suit.Clubs;
-    public static readonly int DIAMOND_OFFSET = 13 * Suit.Diamonds;
-    public static readonly int HEART_OFFSET = 13 * Suit.Hearts;
-
     public static uint Evaluate(ulong cards, int numberOfCards)
     {
         uint retval = 0, four_mask, three_mask, two_mask;
