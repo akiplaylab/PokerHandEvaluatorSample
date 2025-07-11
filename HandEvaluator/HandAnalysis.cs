@@ -590,8 +590,8 @@ public partial class Hand : IComparable
         int boardcount = BitCount(board);
 
         // Preconditions
-        if (BitCount(ourcards) != 2) throw new ArgumentOutOfRangeException("pocketcards");
-        if (boardcount > 5) throw new ArgumentOutOfRangeException("boardcards");
+        if (BitCount(ourcards) != 2) throw new ArgumentOutOfRangeException(nameof(ourcards));
+        if (boardcount > 5) throw new ArgumentOutOfRangeException(nameof(board));
         if (player.Length != opponent.Length || player.Length != 9) throw new ArgumentOutOfRangeException();
 
         // Use precalcuated results for pocket cards
