@@ -649,7 +649,7 @@ public partial class Hand : IComparable
         switch (numberOfCards)
         {
             case 7:
-                for (_i1 = NumberOfCards - 1; _i1 >= 0; _i1--)
+                for (_i1 = TotalCardsStandard - 1; _i1 >= 0; _i1--)
                 {
                     _card1 = CardMasksTable[_i1];
                     for (_i2 = _i1 - 1; _i2 >= 0; _i2--)
@@ -679,7 +679,7 @@ public partial class Hand : IComparable
                 }
                 break;
             case 6:
-                for (_i1 = NumberOfCards - 1; _i1 >= 0; _i1--)
+                for (_i1 = TotalCardsStandard - 1; _i1 >= 0; _i1--)
                 {
                     _card1 = CardMasksTable[_i1];
                     for (_i2 = _i1 - 1; _i2 >= 0; _i2--)
@@ -705,7 +705,7 @@ public partial class Hand : IComparable
                 }
                 break;
             case 5:
-                for (_i1 = NumberOfCards - 1; _i1 >= 0; _i1--)
+                for (_i1 = TotalCardsStandard - 1; _i1 >= 0; _i1--)
                 {
                     _card1 = CardMasksTable[_i1];
                     for (_i2 = _i1 - 1; _i2 >= 0; _i2--)
@@ -727,7 +727,7 @@ public partial class Hand : IComparable
                 }
                 break;
             case 4:
-                for (_i1 = NumberOfCards - 1; _i1 >= 0; _i1--)
+                for (_i1 = TotalCardsStandard - 1; _i1 >= 0; _i1--)
                 {
                     _card1 = CardMasksTable[_i1];
                     for (_i2 = _i1 - 1; _i2 >= 0; _i2--)
@@ -746,7 +746,7 @@ public partial class Hand : IComparable
 
                 break;
             case 3:
-                for (_i1 = NumberOfCards - 1; _i1 >= 0; _i1--)
+                for (_i1 = TotalCardsStandard - 1; _i1 >= 0; _i1--)
                 {
                     _card1 = CardMasksTable[_i1];
                     for (_i2 = _i1 - 1; _i2 >= 0; _i2--)
@@ -790,7 +790,7 @@ public partial class Hand : IComparable
         switch (numberOfCards - BitCount(shared))
         {
             case 7:
-                for (_i1 = NumberOfCards - 1; _i1 >= 0; _i1--)
+                for (_i1 = TotalCardsStandard - 1; _i1 >= 0; _i1--)
                 {
                     _card1 = CardMasksTable[_i1];
                     if ((dead & _card1) != 0) continue;
@@ -833,7 +833,7 @@ public partial class Hand : IComparable
                 }
                 break;
             case 6:
-                for (_i1 = NumberOfCards - 1; _i1 >= 0; _i1--)
+                for (_i1 = TotalCardsStandard - 1; _i1 >= 0; _i1--)
                 {
                     _card1 = CardMasksTable[_i1];
                     if ((dead & _card1) != 0) continue;
@@ -871,7 +871,7 @@ public partial class Hand : IComparable
                 }
                 break;
             case 5:
-                for (_i1 = NumberOfCards - 1; _i1 >= 0; _i1--)
+                for (_i1 = TotalCardsStandard - 1; _i1 >= 0; _i1--)
                 {
                     _card1 = CardMasksTable[_i1];
                     if ((dead & _card1) != 0) continue;
@@ -902,7 +902,7 @@ public partial class Hand : IComparable
                 }
                 break;
             case 4:
-                for (_i1 = NumberOfCards - 1; _i1 >= 0; _i1--)
+                for (_i1 = TotalCardsStandard - 1; _i1 >= 0; _i1--)
                 {
                     _card1 = CardMasksTable[_i1];
                     if ((dead & _card1) != 0) continue;
@@ -928,7 +928,7 @@ public partial class Hand : IComparable
 
                 break;
             case 3:
-                for (_i1 = NumberOfCards - 1; _i1 >= 0; _i1--)
+                for (_i1 = TotalCardsStandard - 1; _i1 >= 0; _i1--)
                 {
                     _card1 = CardMasksTable[_i1];
                     if ((dead & _card1) != 0) continue;

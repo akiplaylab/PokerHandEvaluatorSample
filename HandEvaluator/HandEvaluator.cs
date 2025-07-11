@@ -204,17 +204,17 @@ public partial class Hand : IComparable
             return -2;
         }
 
-        return rank + suit * 13;
+        return rank + suit * NumRanksPerSuit;
     }
 
     public static int CardRank(int card)
     {
-        return card % 13;
+        return card % NumRanksPerSuit;
     }
 
     public static int CardSuit(int card)
     {
-        return card / 13;
+        return card / NumRanksPerSuit;
     }
 
     public static string DescriptionFromHandValueInternal(uint handValue)
@@ -480,7 +480,7 @@ public partial class Hand : IComparable
 
     private static uint CardMask(ulong cards, int suit)
     {
-        return (uint)(cards >> 13 * suit & RANK_MASK_13BIT);
+        return (uint)(cards >> NumRanksPerSuit * suit & RANK_MASK_13BIT);
     }
 
     public static string MaskToString(ulong mask)

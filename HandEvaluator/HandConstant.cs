@@ -4,7 +4,9 @@ namespace HandEvaluator;
 
 public partial class Hand : IComparable
 {
-    public const int NumberOfCards = 52;
+    public const int TotalCardsStandard = NumRanksPerSuit * NumSuits;
+    public const int NumRanksPerSuit = 13;
+    public const int NumSuits = 4;
 
     private const int HANDTYPE_SHIFT = 24;
     private const int TOP_CARD_SHIFT = 16;
@@ -28,10 +30,10 @@ public partial class Hand : IComparable
     private const uint HANDTYPE_VALUE_PAIR = (uint)HandTypes.Pair << HANDTYPE_SHIFT;
     private const uint HANDTYPE_VALUE_HIGHCARD = (uint)HandTypes.HighCard << HANDTYPE_SHIFT;
 
-    public const int CLUB_OFFSET = 13 * Suit.Clubs;
-    public const int DIAMOND_OFFSET = 13 * Suit.Diamonds;
-    public const int HEART_OFFSET = 13 * Suit.Hearts;
-    public const int SPADE_OFFSET = 13 * Suit.Spades;
+    public const int CLUB_OFFSET = NumRanksPerSuit * Suit.Clubs;
+    public const int DIAMOND_OFFSET = NumRanksPerSuit * Suit.Diamonds;
+    public const int HEART_OFFSET = NumRanksPerSuit * Suit.Hearts;
+    public const int SPADE_OFFSET = NumRanksPerSuit * Suit.Spades;
 
     private const ulong RANK_MASK_13BIT = 0x1FFFUL;
 }
