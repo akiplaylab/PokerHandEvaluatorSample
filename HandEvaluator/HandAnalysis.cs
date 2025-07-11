@@ -652,7 +652,7 @@ public partial class Hand : IComparable
         const int behind = 0;
         uint ourbest, oppbest;
 
-        foreach (uint handmask in Hands(0UL, ourcards | board | oppcards, 7 - BitCount(ourcards | board)))
+        foreach (ulong handmask in Hands(0UL, ourcards | board | oppcards, 7 - BitCount(ourcards | board)))
         {
             ourbest = Evaluate(ourcards | board | handmask, 7);
             oppbest = Evaluate(oppcards | board | handmask, 7);
@@ -696,7 +696,7 @@ public partial class Hand : IComparable
         ulong dead_cards = pocket | board;
 
         // Iterate through all possible opponent pocket cards
-        foreach (uint oppPocket in Hands(0UL, dead_cards, 2))
+        foreach (ulong oppPocket in Hands(0UL, dead_cards, 2))
         {
             // Note Current State
             uint opprank = Evaluate(oppPocket | board, BitCount(oppPocket | board));
