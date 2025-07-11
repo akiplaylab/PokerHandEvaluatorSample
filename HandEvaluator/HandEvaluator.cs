@@ -494,7 +494,7 @@ public partial class Hand : IComparable
             {
                 if (count != 0)
                 {
-                    builder.Append(" ");
+                    builder.Append(' ');
                 }
                 builder.Append(CardTable[i]);
                 count++;
