@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using HandEvaluator.Models;
+using System.Reflection;
 using static HandEvaluator.Hand;
 
 namespace HandEvaluatorBenchmarkRunner;

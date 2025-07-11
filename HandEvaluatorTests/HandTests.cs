@@ -1,4 +1,5 @@
-﻿using static HandEvaluator.Hand;
+﻿using HandEvaluator.Models;
+using static HandEvaluator.Hand;
 
 namespace HandEvaluatorTests;
 

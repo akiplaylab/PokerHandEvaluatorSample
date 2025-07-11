@@ -1,3 +1,4 @@
+using HandEvaluator.Models;
 using System.Diagnostics;
 using System.Text;
 
@@ -5,38 +6,6 @@ namespace HandEvaluator;
 
 public partial class Hand : IComparable
 {
-    public enum HandTypes
-    {
-        HighCard = 0,
-        Pair = 1,
-        TwoPair = 2,
-        Trips = 3,
-        Straight = 4,
-        Flush = 5,
-        FullHouse = 6,
-        FourOfAKind = 7,
-        StraightFlush = 8
-    }
-
-    public static readonly int Hearts = 2;
-    public static readonly int Diamonds = 1;
-    public static readonly int Clubs = 0;
-    public static readonly int Spades = 3;
-
-    public static readonly int Rank2 = 0;
-    public static readonly int Rank3 = 1;
-    public static readonly int Rank4 = 2;
-    public static readonly int Rank5 = 3;
-    public static readonly int Rank6 = 4;
-    public static readonly int Rank7 = 5;
-    public static readonly int Rank8 = 6;
-    public static readonly int Rank9 = 7;
-    public static readonly int RankTen = 8;
-    public static readonly int RankJack = 9;
-    public static readonly int RankQueen = 10;
-    public static readonly int RankKing = 11;
-    public static readonly int RankAce = 12;
-
     public static readonly int CardJoker = 52;
     public static readonly int NumberOfCards = 52;
     public static readonly int NCardsWJoker = 53;
@@ -183,7 +152,7 @@ public partial class Hand : IComparable
                         if (cards[index] == '0')
                         {
                             index++;
-                            rank = RankTen;
+                            rank = Rank.RankTen;
                         }
                         else
                         {
@@ -196,48 +165,48 @@ public partial class Hand : IComparable
                     }
                     break;
                 case '2':
-                    rank = Rank2;
+                    rank = Rank.Rank2;
                     break;
                 case '3':
-                    rank = Rank3;
+                    rank = Rank.Rank3;
                     break;
                 case '4':
-                    rank = Rank4;
+                    rank = Rank.Rank4;
                     break;
                 case '5':
-                    rank = Rank5;
+                    rank = Rank.Rank5;
                     break;
                 case '6':
-                    rank = Rank6;
+                    rank = Rank.Rank6;
                     break;
                 case '7':
-                    rank = Rank7;
+                    rank = Rank.Rank7;
                     break;
                 case '8':
-                    rank = Rank8;
+                    rank = Rank.Rank8;
                     break;
                 case '9':
-                    rank = Rank9;
+                    rank = Rank.Rank9;
                     break;
                 case 'T':
                 case 't':
-                    rank = RankTen;
+                    rank = Rank.RankTen;
                     break;
                 case 'J':
                 case 'j':
-                    rank = RankJack;
+                    rank = Rank.RankJack;
                     break;
                 case 'Q':
                 case 'q':
-                    rank = RankQueen;
+                    rank = Rank.RankQueen;
                     break;
                 case 'K':
                 case 'k':
-                    rank = RankKing;
+                    rank = Rank.RankKing;
                     break;
                 case 'A':
                 case 'a':
-                    rank = RankAce;
+                    rank = Rank.RankAce;
                     break;
                 default:
                     return -2;
@@ -254,19 +223,19 @@ public partial class Hand : IComparable
             {
                 case 'H':
                 case 'h':
-                    suit = Hearts;
+                    suit = Suit.Hearts;
                     break;
                 case 'D':
                 case 'd':
-                    suit = Diamonds;
+                    suit = Suit.Diamonds;
                     break;
                 case 'C':
                 case 'c':
-                    suit = Clubs;
+                    suit = Suit.Clubs;
                     break;
                 case 'S':
                 case 's':
-                    suit = Spades;
+                    suit = Suit.Spades;
                     break;
                 default:
                     return -2;
@@ -683,10 +652,10 @@ public partial class Hand : IComparable
     private static readonly uint HANDTYPE_VALUE_TWOPAIR = (uint)HandTypes.TwoPair << HANDTYPE_SHIFT;
     private static readonly uint HANDTYPE_VALUE_PAIR = (uint)HandTypes.Pair << HANDTYPE_SHIFT;
     private static readonly uint HANDTYPE_VALUE_HIGHCARD = (uint)HandTypes.HighCard << HANDTYPE_SHIFT;
-    public static readonly int SPADE_OFFSET = 13 * Spades;
-    public static readonly int CLUB_OFFSET = 13 * Clubs;
-    public static readonly int DIAMOND_OFFSET = 13 * Diamonds;
-    public static readonly int HEART_OFFSET = 13 * Hearts;
+    public static readonly int SPADE_OFFSET = 13 * Suit.Spades;
+    public static readonly int CLUB_OFFSET = 13 * Suit.Clubs;
+    public static readonly int DIAMOND_OFFSET = 13 * Suit.Diamonds;
+    public static readonly int HEART_OFFSET = 13 * Suit.Hearts;
 
     public static uint Evaluate(ulong cards, int numberOfCards)
     {

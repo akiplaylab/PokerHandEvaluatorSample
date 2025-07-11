@@ -1,5 +1,5 @@
-﻿using System.Diagnostics;
-using static HandEvaluator.Hand;
+﻿using HandEvaluator.Models;
+using System.Diagnostics;
 
 namespace HandEvaluatorBenchmarkRunner;
 

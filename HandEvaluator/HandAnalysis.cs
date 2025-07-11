@@ -1,3 +1,4 @@
+using HandEvaluator.Models;
 using System.Diagnostics;
 
 namespace HandEvaluator;
@@ -220,10 +221,10 @@ public partial class Hand : IComparable
     {
         int cards = BitCount(mask);
 
-        uint sc = CardMask(mask, Clubs);
-        uint sd = CardMask(mask, Diamonds);
-        uint sh = CardMask(mask, Hearts);
-        uint ss = CardMask(mask, Spades);
+        uint sc = CardMask(mask, Suit.Clubs);
+        uint sd = CardMask(mask, Suit.Diamonds);
+        uint sh = CardMask(mask, Suit.Hearts);
+        uint ss = CardMask(mask, Suit.Spades);
 
         return BitCount(sc) == cards || BitCount(sd) == cards ||
                 BitCount(sh) == cards || BitCount(ss) == cards;
@@ -240,10 +241,10 @@ public partial class Hand : IComparable
 
         if (BitCount(mask) != 2) return -1;
 
-        uint bf = CardMask(mask, Clubs) |
-                    CardMask(mask, Diamonds) |
-                    CardMask(mask, Hearts) |
-                    CardMask(mask, Spades);
+        uint bf = CardMask(mask, Suit.Clubs) |
+                    CardMask(mask, Suit.Diamonds) |
+                    CardMask(mask, Suit.Hearts) |
+                    CardMask(mask, Suit.Spades);
 
         if (BitCount(bf) != 2) return -1;
 
