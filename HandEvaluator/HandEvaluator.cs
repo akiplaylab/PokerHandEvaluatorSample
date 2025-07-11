@@ -298,12 +298,6 @@ public partial class Hand : IComparable
         return card / 13;
     }
 
-    [Obsolete("Please use Hand.DescriptionFromMask(ulong mask)")]
-    public static string DescriptionFromHandValue(uint handValue)
-    {
-        return DescriptionFromHandValueInternal(handValue);
-    }
-
     public static string DescriptionFromHandValueInternal(uint handValue)
     {
         StringBuilder b = new StringBuilder();
