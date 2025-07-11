@@ -784,7 +784,7 @@ public partial class Hand : IComparable
     }
 
     private static readonly byte[] bits =
-    {
+    [
         0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4,  /* 0   - 15  */
 			1, 2, 2, 3, 2, 3, 3, 4, 2, 3, 3, 4, 3, 4, 4, 5,  /* 16  - 31  */
 			1, 2, 2, 3, 2, 3, 3, 4, 2, 3, 3, 4, 3, 4, 4, 5,  /* 32  - 47  */
@@ -801,7 +801,7 @@ public partial class Hand : IComparable
 			3, 4, 4, 5, 4, 5, 5, 6, 4, 5, 5, 6, 5, 6, 6, 7,  /* 208 - 223 */
 			3, 4, 4, 5, 4, 5, 5, 6, 4, 5, 5, 6, 5, 6, 6, 7,  /* 224 - 239 */
 			4, 5, 5, 6, 5, 6, 6, 7, 5, 6, 6, 7, 6, 7, 7, 8   /* 240 - 255 */
-		};
+		];
 
     public static int BitCount(ulong bitField)
     {
@@ -817,7 +817,7 @@ public partial class Hand : IComparable
     }
 
     private static readonly ushort[] nBitsAndStrTable =
-        {
+        [
             0x00 ,
             0x04 ,
             0x04 ,
@@ -9010,10 +9010,10 @@ public partial class Hand : IComparable
             0x33 ,
             0x33 ,
             0x37
-        };
+        ];
 
     private static readonly ushort[] nBitsTable =
-    {
+    [
         0x00 ,
         0x01 ,
         0x01 ,
@@ -17206,10 +17206,10 @@ public partial class Hand : IComparable
         0x0c ,
         0x0c ,
         0x0d
-    };
+    ];
 
     private static readonly ushort[] straightTable =
-    {
+    [
         0x00 ,
         0x00 ,
         0x00 ,
@@ -25402,10 +25402,10 @@ public partial class Hand : IComparable
         0x0c ,
         0x0c ,
         0x0c
-    };
+    ];
 
     private static readonly uint[] topFiveCardsTable =
-    {
+    [
         0x00000000 ,
         0x00000000 ,
         0x00010000 ,
@@ -33598,10 +33598,10 @@ public partial class Hand : IComparable
             0x000cba98 ,
             0x000cba98 ,
             0x000cba98
-        };
+        ];
 
     private static readonly ushort[] topCardTable =
-    {
+    [
         0x00 ,
         0x00 ,
         0x01 ,
@@ -41794,10 +41794,10 @@ public partial class Hand : IComparable
         0x0c ,
         0x0c ,
         0x0c
-    };
+    ];
 
     public static readonly ulong[] CardMasksTable =
-    {
+    [
         0x1,
         0x2,
         0x4,
@@ -41850,45 +41850,45 @@ public partial class Hand : IComparable
         0x2000000000000,
         0x4000000000000,
         0x8000000000000,
-    };
+    ];
 
     public static readonly string[] CardTable =
-    {
+    [
         "2c", "3c", "4c", "5c", "6c", "7c", "8c", "9c", "Tc", "Jc", "Qc", "Kc", "Ac",
         "2d", "3d", "4d", "5d", "6d", "7d", "8d", "9d", "Td", "Jd", "Qd", "Kd", "Ad",
         "2h", "3h", "4h", "5h", "6h", "7h", "8h", "9h", "Th", "Jh", "Qh", "Kh", "Ah",
         "2s", "3s", "4s", "5s", "6s", "7s", "8s", "9s", "Ts", "Js", "Qs", "Ks", "As",
-    };
+    ];
 
     private static readonly string[] ranktbl =
-    {
+    [
         "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Jack", "Queen", "King", "Ace",
         "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Jack", "Queen", "King", "Ace",
         "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Jack", "Queen", "King", "Ace",
         "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Jack", "Queen", "King", "Ace"
-    };
+    ];
 
     private static readonly string[] suittbl =
-    {
+    [
         "Clubs", "Clubs", "Clubs", "Clubs", "Clubs", "Clubs", "Clubs", "Clubs", "Clubs", "Clubs", "Clubs", "Clubs", "Clubs",
         "Diamonds", "Diamonds", "Diamonds", "Diamonds", "Diamonds", "Diamonds", "Diamonds", "Diamonds", "Diamonds", "Diamonds", "Diamonds", "Diamonds", "Diamonds",
         "Hearts", "Hearts", "Hearts", "Hearts", "Hearts", "Hearts", "Hearts", "Hearts", "Hearts", "Hearts", "Hearts", "Hearts", "Hearts",
         "Spades", "Spades", "Spades", "Spades", "Spades", "Spades", "Spades", "Spades", "Spades", "Spades", "Spades", "Spades", "Spades",
-    };
+    ];
 
     private static readonly char[] rankchar =
-    {
+    [
         '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A',
         '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A',
         '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A',
         '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A',
-    };
+    ];
 
     private static readonly char[] suitchar =
-    {
+    [
         'c', 'c', 'c', 'c', 'c', 'c', 'c', 'c', 'c', 'c', 'c', 'c', 'c',
         'd', 'd', 'd', 'd', 'd', 'd', 'd', 'd', 'd', 'd', 'd', 'd', 'd',
         'h', 'h', 'h', 'h', 'h', 'h', 'h', 'h', 'h', 'h', 'h', 'h', 'h',
         's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's',
-    };
+    ];
 }
