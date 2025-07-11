@@ -26,7 +26,7 @@ public partial class Hand : IComparable
         int index = 0;
         ulong handmask = 0UL;
         int cards = 0;
-        int card = 0;
+        int card;
 
         try
         {
@@ -90,8 +90,8 @@ public partial class Hand : IComparable
 
     public static int NextCard(string cards, ref int index)
     {
-        Rank rank = 0;
-        Suit suit = 0;
+        Rank rank;
+        Suit suit;
 
         // Remove whitespace
         while (index < cards.Length && cards[index] == ' ')
