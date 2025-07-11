@@ -619,7 +619,7 @@ public partial class Hand : IComparable
         Pocket32o = 168
     };
 
-    static private Dictionary<ulong, PocketHand169Enum> pocketdict = new();
+    static private Dictionary<ulong, PocketHand169Enum> pocketdict = [];
 
     public static PocketHand169Enum PocketHand169Type(ulong mask)
     {
