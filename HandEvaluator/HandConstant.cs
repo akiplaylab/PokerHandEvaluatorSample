@@ -31,10 +31,10 @@ public partial class Hand : IComparable
     private const uint HandTypeValuePair = (uint)HandTypes.Pair << HandTypeShift;
     private const uint HandTypeValueHighCard = (uint)HandTypes.HighCard << HandTypeShift;
 
-    public const int ClubOffset = NumRanksPerSuit * Suit.Clubs;
-    public const int DiamondOffset = NumRanksPerSuit * Suit.Diamonds;
-    public const int HeartOffset = NumRanksPerSuit * Suit.Hearts;
-    public const int SpadeOffset = NumRanksPerSuit * Suit.Spades;
+    public const int ClubOffset = NumRanksPerSuit * (int)Suit.Clubs;
+    public const int DiamondOffset = NumRanksPerSuit * (int)Suit.Diamonds;
+    public const int HeartOffset = NumRanksPerSuit * (int)Suit.Hearts;
+    public const int SpadeOffset = NumRanksPerSuit * (int)Suit.Spades;
 
     private const ulong RankMask13Bit = 0x1FFFUL;
 }

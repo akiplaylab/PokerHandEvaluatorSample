@@ -1,9 +1,9 @@
 ﻿namespace HandEvaluator.Models;
 
-public static class Suit
+public enum Suit
 {
-    public const int Clubs = 0;
-    public const int Diamonds = 1;
-    public const int Hearts = 2;
-    public const int Spades = 3;
+    Clubs = 0,
+    Diamonds = 1,
+    Hearts = 2,
+    Spades = 3,
 }

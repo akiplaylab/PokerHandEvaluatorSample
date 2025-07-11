@@ -90,7 +90,8 @@ public partial class Hand : IComparable
 
     public static int NextCard(string cards, ref int index)
     {
-        int rank = 0, suit = 0;
+        Rank rank = 0;
+        Suit suit = 0;
 
         // Remove whitespace
         while (index < cards.Length && cards[index] == ' ')
@@ -204,7 +205,7 @@ public partial class Hand : IComparable
             return -2;
         }
 
-        return rank + suit * NumRanksPerSuit;
+        return (int)rank + (int)suit * NumRanksPerSuit;
     }
 
     public static int CardRank(int card)
@@ -478,9 +479,9 @@ public partial class Hand : IComparable
         return c << ThirdCardShift;
     }
 
-    private static uint CardMask(ulong cards, int suit)
+    private static uint CardMask(ulong cards, Suit suit)
     {
-        return (uint)(cards >> NumRanksPerSuit * suit & RankMask13Bit);
+        return (uint)(cards >> NumRanksPerSuit * (int)suit & RankMask13Bit);
     }
 
     public static string MaskToString(ulong mask)
