@@ -28,10 +28,10 @@ public partial class Hand : IComparable
     private const uint HANDTYPE_VALUE_PAIR = (uint)HandTypes.Pair << HANDTYPE_SHIFT;
     private const uint HANDTYPE_VALUE_HIGHCARD = (uint)HandTypes.HighCard << HANDTYPE_SHIFT;
 
-    public const int SPADE_OFFSET = 13 * Suit.Spades;
     public const int CLUB_OFFSET = 13 * Suit.Clubs;
     public const int DIAMOND_OFFSET = 13 * Suit.Diamonds;
     public const int HEART_OFFSET = 13 * Suit.Hearts;
+    public const int SPADE_OFFSET = 13 * Suit.Spades;
 
     private const ulong RANK_MASK_13BIT = 0x1FFFUL;
 }
