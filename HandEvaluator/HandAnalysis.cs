@@ -9,7 +9,7 @@ public partial class Hand : IComparable
         ulong[] pocketmasks = new ulong[pockets.Length];
         ulong[] pockethands = new ulong[pockets.Length];
         int count = 0, bestcount;
-        ulong boardmask = 0UL, deadcards_mask = 0UL, deadcards = ParseHand(dead, ref count);
+        ulong deadcards_mask = 0UL, deadcards = ParseHand(dead, ref count);
 
         totalHands = 0;
         deadcards_mask |= deadcards;
@@ -25,7 +25,7 @@ public partial class Hand : IComparable
         }
 
         count = 0;
-        boardmask = ParseHand("", board, ref count);
+        ulong boardmask = ParseHand("", board, ref count);
 
         // Iterate through all board possiblities that doesn't include any pocket cards.
         foreach (ulong boardhand in Hands(boardmask, deadcards_mask, 5))
@@ -77,22 +77,21 @@ public partial class Hand : IComparable
         int wins = 0;
         int ties = 0;
         int losses = 0;
-        ulong pocketmasks = 0UL;
         int count = 0;
-        ulong boardmask = 0UL, deadcards_mask = 0UL, deadcards = ParseHand(dead, ref count);
+        ulong deadcards = ParseHand(dead, ref count);
 
         count = 0;
-        pocketmasks = ParseHand(pockets, "", ref count);
+        ulong pocketmasks = ParseHand(pockets, "", ref count);
         if (count != 2)
             throw new ArgumentException(string.Format("There must be two pocket cards. count={0}. hand=\"{1}\"", count, pockets)); // Must have 2 cards in each pocket card set.
 
         count = 0;
-        boardmask = ParseHand("", board, ref count);
+        ulong boardmask = ParseHand("", board, ref count);
         Random rand = new();
 
         for (int i = 0; i < trials; i++)
         {
-            deadcards_mask = deadcards | pocketmasks | boardmask;
+            ulong deadcards_mask = deadcards | pocketmasks | boardmask;
             ulong chance = GetRandomHand(deadcards_mask, 5 - BitCount(boardmask), rand);
             deadcards_mask |= chance;
             ulong mypocket = Evaluate(pocketmasks | chance | boardmask, 7);
@@ -586,7 +585,6 @@ public partial class Hand : IComparable
     {
         uint ourbest, oppbest;
         int count = 0;
-        int cards = BitCount(ourcards | board);
         int boardcount = BitCount(board);
 
         // Preconditions
@@ -652,7 +650,6 @@ public partial class Hand : IComparable
         const int ahead = 2;
         const int tied = 1;
         const int behind = 0;
-        ulong dead_cards = ourcards | board | oppcards;
         uint ourbest, oppbest;
 
         foreach (uint handmask in Hands(0UL, ourcards | board | oppcards, 7 - BitCount(ourcards | board)))
