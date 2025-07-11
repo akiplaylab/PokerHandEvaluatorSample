@@ -6,9 +6,7 @@ namespace HandEvaluator;
 
 public partial class Hand : IComparable
 {
-    public static readonly int CardJoker = 52;
     public static readonly int NumberOfCards = 52;
-    public static readonly int NCardsWJoker = 53;
     private static readonly int HANDTYPE_SHIFT = 24;
     private static readonly int TOP_CARD_SHIFT = 16;
     private static readonly uint TOP_CARD_MASK = 0x000F0000;
