@@ -354,19 +354,6 @@ public partial class Hand : IComparable
         return "";
     }
 
-    [Obsolete("Please use Hand.DescriptionFromMask(ulong mask)")]
-    public static string MaskToDescription(ulong mask)
-    {
-#if DEBUG
-        int cards = BitCount(mask);
-        if (cards < 1 || cards > 7)
-            throw new ArgumentOutOfRangeException("mask");
-        return DescriptionFromMask(mask);
-#else
-        return DescriptionFromMask(mask);
-#endif
-    }
-
     public static string DescriptionFromMask(ulong cards)
     {
         int numberOfCards = BitCount(cards);
