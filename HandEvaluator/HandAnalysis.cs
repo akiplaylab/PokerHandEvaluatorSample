@@ -88,7 +88,7 @@ public partial class Hand : IComparable
 
         count = 0;
         boardmask = ParseHand("", board, ref count);
-        Random rand = new Random();
+        Random rand = new();
 
         for (int i = 0; i < trials; i++)
         {

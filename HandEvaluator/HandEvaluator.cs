@@ -220,7 +220,7 @@ public partial class Hand : IComparable
 
     public static string DescriptionFromHandValueInternal(uint handValue)
     {
-        StringBuilder b = new StringBuilder();
+        StringBuilder b = new();
 
         switch ((HandTypes)HandType(handValue))
         {
@@ -486,7 +486,7 @@ public partial class Hand : IComparable
 
     public static string MaskToString(ulong mask)
     {
-        StringBuilder builder = new StringBuilder();
+        StringBuilder builder = new();
         int count = 0;
         for (int i = 51; i >= 0; i--)
         {

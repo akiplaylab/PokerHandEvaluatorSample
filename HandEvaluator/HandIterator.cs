@@ -619,7 +619,7 @@ public partial class Hand : IComparable
         Pocket32o = 168
     };
 
-    static private Dictionary<ulong, PocketHand169Enum> pocketdict = new Dictionary<ulong, PocketHand169Enum>();
+    static private Dictionary<ulong, PocketHand169Enum> pocketdict = new();
 
     public static PocketHand169Enum PocketHand169Type(ulong mask)
     {
@@ -993,7 +993,7 @@ public partial class Hand : IComparable
     {
         ulong deadmask = dead | shared;
         int cardcount = ncards - BitCount(shared);
-        Random rand = new Random();
+        Random rand = new();
 
         for (int count = 0; count < trials; count++)
         {
@@ -1018,7 +1018,7 @@ public partial class Hand : IComparable
 
         int cardcount = ncards - BitCount(shared);
         ulong deadmask = dead | shared;
-        Random rand = new Random();
+        Random rand = new();
 
         QueryPerformanceFrequency(out freq);
         QueryPerformanceCounter(out start);
