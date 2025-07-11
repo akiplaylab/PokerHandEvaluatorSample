@@ -1016,7 +1016,6 @@ public partial class Hand : IComparable
     {
         long start, freq, curtime;
 
-        int cardcount = ncards - BitCount(shared);
         ulong deadmask = dead | shared;
         Random rand = new();
 
