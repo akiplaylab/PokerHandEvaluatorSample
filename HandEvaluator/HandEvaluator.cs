@@ -276,10 +276,10 @@ public partial class Hand : IComparable
     {
         int numberOfCards = BitCount(cards);
 
-        uint sc = (uint)(cards >> CLUB_OFFSET & RANK_MASK_13BIT);
-        uint sd = (uint)(cards >> DIAMOND_OFFSET & RANK_MASK_13BIT);
-        uint sh = (uint)(cards >> HEART_OFFSET & RANK_MASK_13BIT);
-        uint ss = (uint)(cards >> SPADE_OFFSET & RANK_MASK_13BIT);
+        uint sc = (uint)(cards >> ClubOffset & RankMask13Bit);
+        uint sd = (uint)(cards >> DiamondOffset & RankMask13Bit);
+        uint sh = (uint)(cards >> HeartOffset & RankMask13Bit);
+        uint ss = (uint)(cards >> SpadeOffset & RankMask13Bit);
 
         uint handvalue = Evaluate(cards, numberOfCards);
 
@@ -430,57 +430,57 @@ public partial class Hand : IComparable
 
     public static uint HandType(uint handValue)
     {
-        return handValue >> HANDTYPE_SHIFT;
+        return handValue >> HandTypeShift;
     }
 
     public static uint TopCard(uint hv)
     {
-        return hv >> TOP_CARD_SHIFT & CARD_MASK;
+        return hv >> TopCardShift & CARD_MASK;
     }
 
     private static uint SECOND_CARD(uint hv)
     {
-        return hv >> SECOND_CARD_SHIFT & CARD_MASK;
+        return hv >> SecondCardShift & CARD_MASK;
     }
 
     private static uint THIRD_CARD(uint hv)
     {
-        return hv >> THIRD_CARD_SHIFT & CARD_MASK;
+        return hv >> ThirdCardShift & CARD_MASK;
     }
 
     private static uint FOURTH_CARD(uint hv)
     {
-        return hv >> FOURTH_CARD_SHIFT & CARD_MASK;
+        return hv >> FourthCardShift & CARD_MASK;
     }
 
     private static uint FIFTH_CARD(uint hv)
     {
-        return hv >> FIFTH_CARD_SHIFT & CARD_MASK;
+        return hv >> FifthCardShift & CARD_MASK;
     }
 
     private static uint HANDTYPE_VALUE(HandTypes ht)
     {
-        return (uint)ht << HANDTYPE_SHIFT;
+        return (uint)ht << HandTypeShift;
     }
 
     private static uint TOP_CARD_VALUE(uint c)
     {
-        return c << TOP_CARD_SHIFT;
+        return c << TopCardShift;
     }
 
     private static uint SECOND_CARD_VALUE(uint c)
     {
-        return c << SECOND_CARD_SHIFT;
+        return c << SecondCardShift;
     }
 
     private static uint THIRD_CARD_VALUE(uint c)
     {
-        return c << THIRD_CARD_SHIFT;
+        return c << ThirdCardShift;
     }
 
     private static uint CardMask(ulong cards, int suit)
     {
-        return (uint)(cards >> NumRanksPerSuit * suit & RANK_MASK_13BIT);
+        return (uint)(cards >> NumRanksPerSuit * suit & RankMask13Bit);
     }
 
     public static string MaskToString(ulong mask)
@@ -511,10 +511,10 @@ public partial class Hand : IComparable
     {
         HandTypes is_st_or_fl = HandTypes.HighCard;
 
-        uint ss = (uint)(mask >> SPADE_OFFSET & RANK_MASK_13BIT);
-        uint sc = (uint)(mask >> CLUB_OFFSET & RANK_MASK_13BIT);
-        uint sd = (uint)(mask >> DIAMOND_OFFSET & RANK_MASK_13BIT);
-        uint sh = (uint)(mask >> HEART_OFFSET & RANK_MASK_13BIT);
+        uint ss = (uint)(mask >> SpadeOffset & RankMask13Bit);
+        uint sc = (uint)(mask >> ClubOffset & RankMask13Bit);
+        uint sd = (uint)(mask >> DiamondOffset & RankMask13Bit);
+        uint sh = (uint)(mask >> HeartOffset & RankMask13Bit);
 
         uint ranks = sc | sd | sh | ss;
         uint rankinfo = nBitsAndStrTable[ranks];
@@ -569,10 +569,10 @@ public partial class Hand : IComparable
     {
         uint retval = 0, four_mask, three_mask, two_mask;
 
-        uint sc = (uint)(cards >> CLUB_OFFSET & RANK_MASK_13BIT);
-        uint sd = (uint)(cards >> DIAMOND_OFFSET & RANK_MASK_13BIT);
-        uint sh = (uint)(cards >> HEART_OFFSET & RANK_MASK_13BIT);
-        uint ss = (uint)(cards >> SPADE_OFFSET & RANK_MASK_13BIT);
+        uint sc = (uint)(cards >> ClubOffset & RankMask13Bit);
+        uint sd = (uint)(cards >> DiamondOffset & RankMask13Bit);
+        uint sh = (uint)(cards >> HeartOffset & RankMask13Bit);
+        uint ss = (uint)(cards >> SpadeOffset & RankMask13Bit);
 
         uint ranks = sc | sd | sh | ss;
         uint n_ranks = nBitsTable[ranks];
@@ -586,36 +586,36 @@ public partial class Hand : IComparable
             if (nBitsTable[ss] >= 5)
             {
                 if (straightTable[ss] != 0)
-                    return HANDTYPE_VALUE_STRAIGHTFLUSH + (uint)(straightTable[ss] << TOP_CARD_SHIFT);
+                    return HandTypeValueStraightFlush + (uint)(straightTable[ss] << TopCardShift);
                 else
-                    retval = HANDTYPE_VALUE_FLUSH + topFiveCardsTable[ss];
+                    retval = HandTypeValueFlush + topFiveCardsTable[ss];
             }
             else if (nBitsTable[sc] >= 5)
             {
                 if (straightTable[sc] != 0)
-                    return HANDTYPE_VALUE_STRAIGHTFLUSH + (uint)(straightTable[sc] << TOP_CARD_SHIFT);
+                    return HandTypeValueStraightFlush + (uint)(straightTable[sc] << TopCardShift);
                 else
-                    retval = HANDTYPE_VALUE_FLUSH + topFiveCardsTable[sc];
+                    retval = HandTypeValueFlush + topFiveCardsTable[sc];
             }
             else if (nBitsTable[sd] >= 5)
             {
                 if (straightTable[sd] != 0)
-                    return HANDTYPE_VALUE_STRAIGHTFLUSH + (uint)(straightTable[sd] << TOP_CARD_SHIFT);
+                    return HandTypeValueStraightFlush + (uint)(straightTable[sd] << TopCardShift);
                 else
-                    retval = HANDTYPE_VALUE_FLUSH + topFiveCardsTable[sd];
+                    retval = HandTypeValueFlush + topFiveCardsTable[sd];
             }
             else if (nBitsTable[sh] >= 5)
             {
                 if (straightTable[sh] != 0)
-                    return HANDTYPE_VALUE_STRAIGHTFLUSH + (uint)(straightTable[sh] << TOP_CARD_SHIFT);
+                    return HandTypeValueStraightFlush + (uint)(straightTable[sh] << TopCardShift);
                 else
-                    retval = HANDTYPE_VALUE_FLUSH + topFiveCardsTable[sh];
+                    retval = HandTypeValueFlush + topFiveCardsTable[sh];
             }
             else
             {
                 uint st = straightTable[ranks];
                 if (st != 0)
-                    retval = HANDTYPE_VALUE_STRAIGHT + (st << TOP_CARD_SHIFT);
+                    retval = HandTypeValueStraight + (st << TopCardShift);
             }
             ;
 
@@ -639,7 +639,7 @@ public partial class Hand : IComparable
         {
             case 0:
                 /* It's a no-pair hand */
-                return HANDTYPE_VALUE_HIGHCARD + topFiveCardsTable[ranks];
+                return HandTypeValueHighCard + topFiveCardsTable[ranks];
             case 1:
                 {
                     /* It's a one-pair hand */
@@ -647,11 +647,11 @@ public partial class Hand : IComparable
 
                     two_mask = ranks ^ sc ^ sd ^ sh ^ ss;
 
-                    retval = (uint)(HANDTYPE_VALUE_PAIR + (topCardTable[two_mask] << TOP_CARD_SHIFT));
+                    retval = (uint)(HandTypeValuePair + (topCardTable[two_mask] << TopCardShift));
                     t = ranks ^ two_mask;      /* Only one bit set in two_mask */
                     /* Get the top five cards in what is left, drop all but the top three 
                      * cards, and shift them by one to get the three desired kickers */
-                    kickers = topFiveCardsTable[t] >> CARD_WIDTH & ~FIFTH_CARD_MASK;
+                    kickers = topFiveCardsTable[t] >> CardWidth & ~FifthCardMask;
                     retval += kickers;
                     return retval;
                 }
@@ -662,10 +662,10 @@ public partial class Hand : IComparable
                 if (two_mask != 0)
                 {
                     uint t = ranks ^ two_mask; /* Exactly two bits set in two_mask */
-                    retval = (uint)(HANDTYPE_VALUE_TWOPAIR
+                    retval = (uint)(HandTypeValueTwoPair
                         + (topFiveCardsTable[two_mask]
-                        & (TOP_CARD_MASK | SECOND_CARD_MASK))
-                        + (topCardTable[t] << THIRD_CARD_SHIFT));
+                        & (TopCardMask | SecondCardMask))
+                        + (topCardTable[t] << ThirdCardShift));
 
                     return retval;
                 }
@@ -673,12 +673,12 @@ public partial class Hand : IComparable
                 {
                     uint t, second;
                     three_mask = (sc & sd | sh & ss) & (sc & sh | sd & ss);
-                    retval = (uint)(HANDTYPE_VALUE_TRIPS + (topCardTable[three_mask] << TOP_CARD_SHIFT));
+                    retval = (uint)(HandTypeValueTrips + (topCardTable[three_mask] << TopCardShift));
                     t = ranks ^ three_mask; /* Only one bit set in three_mask */
                     second = topCardTable[t];
-                    retval += second << SECOND_CARD_SHIFT;
+                    retval += second << SecondCardShift;
                     t ^= 1U << (int)second;
-                    retval += (uint)(topCardTable[t] << THIRD_CARD_SHIFT);
+                    retval += (uint)(topCardTable[t] << ThirdCardShift);
                     return retval;
                 }
 
@@ -688,9 +688,9 @@ public partial class Hand : IComparable
                 if (four_mask != 0)
                 {
                     uint tc = topCardTable[four_mask];
-                    retval = (uint)(HANDTYPE_VALUE_FOUR_OF_A_KIND
-                        + (tc << TOP_CARD_SHIFT)
-                        + (topCardTable[ranks ^ 1U << (int)tc] << SECOND_CARD_SHIFT));
+                    retval = (uint)(HandTypeValueFourOfAKind
+                        + (tc << TopCardShift)
+                        + (topCardTable[ranks ^ 1U << (int)tc] << SecondCardShift));
                     return retval;
                 }
                 ;
@@ -708,11 +708,11 @@ public partial class Hand : IComparable
                        full house since n_dups >= 3 */
                     uint tc, t;
                     three_mask = (sc & sd | sh & ss) & (sc & sh | sd & ss);
-                    retval = HANDTYPE_VALUE_FULLHOUSE;
+                    retval = HandTypeValueFullHouse;
                     tc = topCardTable[three_mask];
-                    retval += tc << TOP_CARD_SHIFT;
+                    retval += tc << TopCardShift;
                     t = (two_mask | three_mask) ^ 1U << (int)tc;
-                    retval += (uint)(topCardTable[t] << SECOND_CARD_SHIFT);
+                    retval += (uint)(topCardTable[t] << SecondCardShift);
                     return retval;
                 }
                 ;
@@ -724,12 +724,12 @@ public partial class Hand : IComparable
                     /* Must be two pair */
                     uint top, second;
 
-                    retval = HANDTYPE_VALUE_TWOPAIR;
+                    retval = HandTypeValueTwoPair;
                     top = topCardTable[two_mask];
-                    retval += top << TOP_CARD_SHIFT;
+                    retval += top << TopCardShift;
                     second = topCardTable[two_mask ^ 1 << (int)top];
-                    retval += second << SECOND_CARD_SHIFT;
-                    retval += (uint)(topCardTable[ranks ^ 1U << (int)top ^ 1 << (int)second] << THIRD_CARD_SHIFT);
+                    retval += second << SecondCardShift;
+                    retval += (uint)(topCardTable[ranks ^ 1U << (int)top ^ 1 << (int)second] << ThirdCardShift);
                     return retval;
                 }
         }
