@@ -2,8 +2,8 @@
 
 public static class Suit
 {
-    public static readonly int Hearts = 2;
-    public static readonly int Diamonds = 1;
-    public static readonly int Clubs = 0;
-    public static readonly int Spades = 3;
+    public const int Hearts = 2;
+    public const int Diamonds = 1;
+    public const int Clubs = 0;
+    public const int Spades = 3;
 }
