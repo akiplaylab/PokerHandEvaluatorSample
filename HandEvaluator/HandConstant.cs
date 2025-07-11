@@ -32,4 +32,6 @@ public partial class Hand : IComparable
     public static readonly int CLUB_OFFSET = 13 * Suit.Clubs;
     public static readonly int DIAMOND_OFFSET = 13 * Suit.Diamonds;
     public static readonly int HEART_OFFSET = 13 * Suit.Hearts;
+
+    private const ulong RANK_MASK_13BIT = 0x1FFFUL;
 }

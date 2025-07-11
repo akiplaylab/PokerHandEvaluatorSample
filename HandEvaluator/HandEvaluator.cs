@@ -276,10 +276,10 @@ public partial class Hand : IComparable
     {
         int numberOfCards = BitCount(cards);
 
-        uint sc = (uint)(cards >> CLUB_OFFSET & 0x1fffUL);
-        uint sd = (uint)(cards >> DIAMOND_OFFSET & 0x1fffUL);
-        uint sh = (uint)(cards >> HEART_OFFSET & 0x1fffUL);
-        uint ss = (uint)(cards >> SPADE_OFFSET & 0x1fffUL);
+        uint sc = (uint)(cards >> CLUB_OFFSET & RANK_MASK_13BIT);
+        uint sd = (uint)(cards >> DIAMOND_OFFSET & RANK_MASK_13BIT);
+        uint sh = (uint)(cards >> HEART_OFFSET & RANK_MASK_13BIT);
+        uint ss = (uint)(cards >> SPADE_OFFSET & RANK_MASK_13BIT);
 
         uint handvalue = Evaluate(cards, numberOfCards);
 
@@ -480,7 +480,7 @@ public partial class Hand : IComparable
 
     private static uint CardMask(ulong cards, int suit)
     {
-        return (uint)(cards >> 13 * suit & 0x1fffUL);
+        return (uint)(cards >> 13 * suit & RANK_MASK_13BIT);
     }
 
     public static string MaskToString(ulong mask)
@@ -511,10 +511,10 @@ public partial class Hand : IComparable
     {
         HandTypes is_st_or_fl = HandTypes.HighCard;
 
-        uint ss = (uint)(mask >> SPADE_OFFSET & 0x1fffUL);
-        uint sc = (uint)(mask >> CLUB_OFFSET & 0x1fffUL);
-        uint sd = (uint)(mask >> DIAMOND_OFFSET & 0x1fffUL);
-        uint sh = (uint)(mask >> HEART_OFFSET & 0x1fffUL);
+        uint ss = (uint)(mask >> SPADE_OFFSET & RANK_MASK_13BIT);
+        uint sc = (uint)(mask >> CLUB_OFFSET & RANK_MASK_13BIT);
+        uint sd = (uint)(mask >> DIAMOND_OFFSET & RANK_MASK_13BIT);
+        uint sh = (uint)(mask >> HEART_OFFSET & RANK_MASK_13BIT);
 
         uint ranks = sc | sd | sh | ss;
         uint rankinfo = nBitsAndStrTable[ranks];
@@ -569,10 +569,10 @@ public partial class Hand : IComparable
     {
         uint retval = 0, four_mask, three_mask, two_mask;
 
-        uint sc = (uint)(cards >> CLUB_OFFSET & 0x1fffUL);
-        uint sd = (uint)(cards >> DIAMOND_OFFSET & 0x1fffUL);
-        uint sh = (uint)(cards >> HEART_OFFSET & 0x1fffUL);
-        uint ss = (uint)(cards >> SPADE_OFFSET & 0x1fffUL);
+        uint sc = (uint)(cards >> CLUB_OFFSET & RANK_MASK_13BIT);
+        uint sd = (uint)(cards >> DIAMOND_OFFSET & RANK_MASK_13BIT);
+        uint sh = (uint)(cards >> HEART_OFFSET & RANK_MASK_13BIT);
+        uint ss = (uint)(cards >> SPADE_OFFSET & RANK_MASK_13BIT);
 
         uint ranks = sc | sd | sh | ss;
         uint n_ranks = nBitsTable[ranks];
