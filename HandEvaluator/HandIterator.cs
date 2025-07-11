@@ -1014,13 +1014,13 @@ public partial class Hand : IComparable
 
     public static IEnumerable<ulong> RandomHands(ulong shared, ulong dead, int ncards, double duration)
     {
-        long start, freq, curtime;
+        long curtime;
 
         ulong deadmask = dead | shared;
         Random rand = new();
 
-        QueryPerformanceFrequency(out freq);
-        QueryPerformanceCounter(out start);
+        QueryPerformanceFrequency(out long freq);
+        QueryPerformanceCounter(out long start);
 
         do
         {
