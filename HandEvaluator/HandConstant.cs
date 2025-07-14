@@ -2,7 +2,7 @@
 
 namespace HandEvaluator;
 
-public partial class Hand : IComparable
+public partial class Hand
 {
     public const int TotalCardsStandard = NumRanksPerSuit * NumSuits;
     public const int NumRanksPerSuit = 13;

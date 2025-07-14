@@ -2,7 +2,7 @@ using HandEvaluator.Models;
 
 namespace HandEvaluator;
 
-public partial class Hand : IComparable
+public partial class Hand
 {
     public static void HandOdds(string[] pockets, string board, string dead, long[] wins, long[] ties, long[] losses, ref long totalHands)
     {

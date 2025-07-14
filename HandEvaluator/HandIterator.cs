@@ -2,7 +2,7 @@ using System.Runtime.InteropServices;
 
 namespace HandEvaluator;
 
-public partial class Hand : IComparable
+public partial class Hand
 {
     private static readonly ulong[] TwoCardTable = [
         0xc000000000000, 0xa000000000000, 0x9000000000000, 0x8800000000000, 0x8400000000000,
