@@ -4,7 +4,7 @@ using static HandEvaluator.Hand;
 namespace HandEvaluatorTests;
 
 [TestClass()]
-public class HandTests
+public partial class HandTests
 {
     [TestMethod()]
     [DataRow("2c", 1UL << 0)]
