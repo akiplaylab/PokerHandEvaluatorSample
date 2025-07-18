@@ -1,4 +1,4 @@
-﻿namespace HandEvaluatorTests;
+﻿namespace HandEvaluator.Tests;
 
 public partial class HandTests
 {

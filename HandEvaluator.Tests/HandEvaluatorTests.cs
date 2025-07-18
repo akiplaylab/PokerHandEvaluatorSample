@@ -1,7 +1,7 @@
 ﻿using HandEvaluator.Models;
 using static HandEvaluator.Hand;
 
-namespace HandEvaluatorTests;
+namespace HandEvaluator.Tests;
 
 [TestClass()]
 public partial class HandTests

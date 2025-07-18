@@ -1,8 +1,7 @@
-﻿using HandEvaluator;
-using MathNet.Numerics;
+﻿using MathNet.Numerics;
 using System.Numerics;
 
-namespace HandEvaluatorTests;
+namespace HandEvaluator.Tests;
 
 public partial class HandTests
 {

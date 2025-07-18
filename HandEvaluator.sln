@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HandEvaluatorBenchmarkRunne
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HandEvaluatorRunner", "HandEvaluatorRunner\HandEvaluatorRunner.csproj", "{530CC0F0-F8A7-F3B8-98CA-83B2CCE01384}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HandEvaluatorTests", "HandEvaluatorTests\HandEvaluatorTests.csproj", "{544EDCDB-7308-4EFA-941F-3164DB77E221}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HandEvaluator.Tests", "HandEvaluator.Tests\HandEvaluator.Tests.csproj", "{544EDCDB-7308-4EFA-941F-3164DB77E221}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
