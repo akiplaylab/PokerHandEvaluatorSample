@@ -1,4 +1,5 @@
 ﻿using HandEvaluator;
+using MathNet.Numerics;
 using System.Numerics;
 
 namespace HandEvaluatorTests;
@@ -10,7 +11,7 @@ public partial class HandTests
     {
         const int numberofCards = 5;
         var result = Hand.Hands(numberofCards);
-        var expectedCount = 52 * 51 * 50 * 49 * 48 / (5 * 4 * 3 * 2 * 1); // C(52, 5)
+        var expectedCount = Combinatorics.Combinations(52, numberofCards);
         Assert.AreEqual(expectedCount, result.Count(), "The number of combinations should match the expected count.");
         Assert.IsTrue(result.All(hand => BitOperations.PopCount(hand) == numberofCards), "All hands should have exactly k cards.");
         Assert.IsTrue(result.All(hand => hand < 1UL << 52), "All hands should be valid 52-card hands.");
