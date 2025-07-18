@@ -12,7 +12,7 @@ public partial class HandTests
         long[] ties = new long[pockets.Length];
         long[] losses = new long[pockets.Length];
         long totalHands = 0;
-        HandEvaluator.Hand.HandOdds(pockets, board, dead, wins, ties, losses, ref totalHands);
+        Hand.HandOdds(pockets, board, dead, wins, ties, losses, ref totalHands);
         Assert.AreEqual(pockets.Length, wins.Length);
         Assert.AreEqual(pockets.Length, ties.Length);
         Assert.AreEqual(pockets.Length, losses.Length);
