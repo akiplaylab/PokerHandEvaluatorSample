@@ -7,8 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HandEvaluator", "HandEvalua
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HandEvaluatorBenchmarkRunner", "HandEvaluatorBenchmarkRunner\HandEvaluatorBenchmarkRunner.csproj", "{C9BE2799-3B8E-861A-EFAD-5C5D4AC9D789}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HandEvaluatorRunner", "HandEvaluatorRunner\HandEvaluatorRunner.csproj", "{530CC0F0-F8A7-F3B8-98CA-83B2CCE01384}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HandEvaluator.Tests", "HandEvaluator.Tests\HandEvaluator.Tests.csproj", "{544EDCDB-7308-4EFA-941F-3164DB77E221}"
 EndProject
 Global
@@ -25,10 +23,6 @@ Global
 		{C9BE2799-3B8E-861A-EFAD-5C5D4AC9D789}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C9BE2799-3B8E-861A-EFAD-5C5D4AC9D789}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C9BE2799-3B8E-861A-EFAD-5C5D4AC9D789}.Release|Any CPU.Build.0 = Release|Any CPU
-		{530CC0F0-F8A7-F3B8-98CA-83B2CCE01384}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{530CC0F0-F8A7-F3B8-98CA-83B2CCE01384}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{530CC0F0-F8A7-F3B8-98CA-83B2CCE01384}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{530CC0F0-F8A7-F3B8-98CA-83B2CCE01384}.Release|Any CPU.Build.0 = Release|Any CPU
 		{544EDCDB-7308-4EFA-941F-3164DB77E221}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{544EDCDB-7308-4EFA-941F-3164DB77E221}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{544EDCDB-7308-4EFA-941F-3164DB77E221}.Release|Any CPU.ActiveCfg = Release|Any CPU
