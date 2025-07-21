@@ -104,6 +104,19 @@ public partial class HandTests
     }
 
     [TestMethod()]
+    [DataRow("Ah Qh Th 7h 3h 2d Kc", "Ah Qh Th 7h 3h")]
+    [DataRow("Ks Kd Kh 2c 2d 9s 5h", "Ks Kd Kh 2c 2d")]
+    [DataRow("6c 7d 4s 5h 8h Ks Td", "6c 7d 4s 5h 8h")]
+    [DataRow("9s 9d 9c 9h 2d 3c Jd", "9s 9d 9c 9h Jd")]
+    [DataRow("Ah Qh Kh Jh Th 3c 2d", "Ah Kh Qh Jh Th")]
+    public void EvaluateTest7cards(string hand, string expectedHand)
+    {
+        var actual = Evaluate(hand);
+        var expected = Evaluate(expectedHand);
+        Assert.AreEqual(expected, actual);
+    }
+
+    [TestMethod()]
     [DataRow("As Kd 8h 5s 2c", true)]
     [DataRow("As Ah Ad Ac", true)]
     [DataRow("Aa", false)]
