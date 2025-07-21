@@ -23,7 +23,7 @@ public partial class HandTests
 
     [TestMethod()]
     [DataRow(5, 1UL << 51 | 1UL << 50 | 1UL << 1 | 1UL << 0, new ulong[] { 1UL << 6 | 1UL << 5 | 1UL << 4 | 1UL << 3 | 1UL << 2, 1UL << 49 | 1UL << 48 | 1UL << 47 | 1UL << 46 | 1UL << 45 })]
-    public void GetHandsTest_WithDead(int numberOfCards, ulong dead, ulong[] contains)
+    public void HandsTestWithDead(int numberOfCards, ulong dead, ulong[] contains)
     {
         var result = Hand.Hands(0UL, dead, numberOfCards);
         var expectedCount = Combinatorics.Combinations(52 - BitOperations.PopCount(dead), numberOfCards);
