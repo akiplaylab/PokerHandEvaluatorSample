@@ -8,10 +8,10 @@ public partial class Hand
     public const int NumRanksPerSuit = 13;
     public const int NumSuits = 4;
 
-    private const int HandTypeShift = 24;
-    private const int TopCardShift = 16;
+    public const int HandTypeShift = 24;
+    public const int TopCardShift = 16;
     private const uint TopCardMask = 0x000F0000;
-    private const int SecondCardShift = 12;
+    public const int SecondCardShift = 12;
     private const uint SecondCardMask = 0x0000F000;
     private const int ThirdCardShift = 8;
     private const int FourthCardShift = 4;

@@ -61,6 +61,49 @@ public partial class HandTests
     }
 
     [TestMethod()]
+    [DataRow("As Ks Qs Js Ts", HandTypes.StraightFlush, new int[] { 12 })]
+    [DataRow("Ah Kh Qh Jh Th", HandTypes.StraightFlush, new int[] { 12 })]
+    [DataRow("Ks Qs Js Ts 9s", HandTypes.StraightFlush, new int[] { 11 })]
+    [DataRow("5s 4s 3s 2s As", HandTypes.StraightFlush, new int[] { 3 })]
+    [DataRow("As Ah Ad Ac Ks", HandTypes.FourOfAKind, new int[] { 12, 11 })]
+    [DataRow("Ks Kh Kd Kc As", HandTypes.FourOfAKind, new int[] { 11, 12 })]
+    [DataRow("As Ah Ad Kd Kc", HandTypes.FullHouse, new int[] { 12, 11 })]
+    [DataRow("Ks Kh Kd Ad Ac", HandTypes.FullHouse, new int[] { 11, 12 })]
+    [DataRow("As Ks Qs Js 9s", HandTypes.Flush, new int[] { 12, 11, 10, 9, 7 })]
+    [DataRow("As Ks Qs Js 8s", HandTypes.Flush, new int[] { 12, 11, 10, 9, 6 })]
+    [DataRow("As Kh Qd Jc Ts", HandTypes.Straight, new int[] { 12 })]
+    [DataRow("5s 4h 3d 2c As", HandTypes.Straight, new int[] { 3 })]
+    [DataRow("As Ah Ad Kc Qs", HandTypes.Trips, new int[] { 12, 11, 10 })]
+    [DataRow("Ks Kh Kd Ac Qs", HandTypes.Trips, new int[] { 11, 12, 10 })]
+    [DataRow("As Ah Kd Kc Qs", HandTypes.TwoPair, new int[] { 12, 11, 10 })]
+    [DataRow("Ks Kh Qd Qc As", HandTypes.TwoPair, new int[] { 11, 10, 12 })]
+    [DataRow("As Ah Kd Qc Js", HandTypes.Pair, new int[] { 12, 11, 10, 9 })]
+    [DataRow("2s 2h Jd 8c 4s", HandTypes.Pair, new int[] { 0, 9, 6, 2 })]
+    [DataRow("As Kh Qd Jc 9s", HandTypes.HighCard, new int[] { 12, 11, 10, 9, 7 })]
+    [DataRow("6s 4h 3d 2c As", HandTypes.HighCard, new int[] { 12, 4, 2, 1, 0 })]
+    public void EvaluateTest(string hand, HandTypes handType, int[] rankIndexes)
+    {
+        var actual = Evaluate(hand);
+        var expected = (int)handType << (6 * 4) | rankIndexes[0] << (4 * 4);
+
+        for (int i = 1; i <= rankIndexes.Length; i++)
+        {
+            expected |= rankIndexes[i - 1] << ((5 - i) * 4);
+        }
+
+        if (actual != expected)
+        {
+            Console.WriteLine($"{hand}");
+            Console.WriteLine($"expected: {expected} (10)");
+            Console.WriteLine($"expected: {expected:B24} (2)");
+            Console.WriteLine($"actual  : {actual} (10)");
+            Console.WriteLine($"actual  : {actual:B24} (2)");
+        }
+
+        Assert.AreEqual((uint)expected, actual);
+    }
+
+    [TestMethod()]
     [DataRow("As Kd 8h 5s 2c", true)]
     [DataRow("As Ah Ad Ac", true)]
     [DataRow("Aa", false)]
